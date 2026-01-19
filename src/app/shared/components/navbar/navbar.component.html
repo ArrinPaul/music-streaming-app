@@ -1,0 +1,68 @@
+<mat-toolbar color="primary" class="navbar">
+  <div class="navbar-container">
+    <div class="navbar-brand">
+      <mat-icon class="logo-icon">music_note</mat-icon>
+      <span class="brand-name">MusicStream</span>
+    </div>
+
+    <nav class="navbar-menu">
+      <a mat-button routerLink="/home" routerLinkActive="active">
+        <mat-icon>home</mat-icon>
+        Home
+      </a>
+      <a mat-button routerLink="/songs" routerLinkActive="active">
+        <mat-icon>library_music</mat-icon>
+        Songs
+      </a>
+      <a mat-button routerLink="/artists" routerLinkActive="active">
+        <mat-icon>person</mat-icon>
+        Artists
+      </a>
+      <a mat-button routerLink="/playlists" routerLinkActive="active">
+        <mat-icon>playlist_play</mat-icon>
+        Playlists
+      </a>
+      <a mat-button routerLink="/now-playing" routerLinkActive="active">
+        <mat-icon>play_circle</mat-icon>
+        Now Playing
+      </a>
+    </nav>
+
+    <div class="navbar-actions">
+      <button mat-icon-button (click)="toggleTheme()" matTooltip="Toggle theme">
+        <mat-icon>{{ currentTheme === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+
+      <button mat-icon-button [matMenuTriggerFor]="userMenu" matTooltip="User menu">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+
+      <mat-menu #userMenu="matMenu">
+        <div class="user-info" mat-menu-item disabled>
+          <div *ngIf="currentUser$ | async as user">
+            <div class="user-name">{{ user.displayName || user.username }}</div>
+            <div class="user-email">{{ user.email }}</div>
+          </div>
+        </div>
+        <mat-divider></mat-divider>
+        <button mat-menu-item routerLink="/login">
+          <mat-icon>login</mat-icon>
+          Sign In
+        </button>
+        <button mat-menu-item routerLink="/feedback">
+          <mat-icon>feedback</mat-icon>
+          Give Feedback
+        </button>
+        <button mat-menu-item>
+          <mat-icon>settings</mat-icon>
+          Settings
+        </button>
+        <button mat-menu-item>
+          <mat-icon>help</mat-icon>
+          Help
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+</mat-toolbar>
+

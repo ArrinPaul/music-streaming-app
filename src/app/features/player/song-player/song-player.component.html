@@ -1,0 +1,127 @@
+<div class="player-container">
+  <!-- No Song State -->
+  <div class="no-song-state" *ngIf="!currentSong">
+    <mat-icon>music_note</mat-icon>
+    <h2>No song playing</h2>
+    <p>Select a song from your library to start listening</p>
+  </div>
+
+  <!-- Player -->
+  <div class="player" *ngIf="currentSong">
+    <!-- Album Art Section -->
+    <div class="album-art-section">
+      <div class="album-art-container">
+        <img 
+          [src]="currentSong.coverImageUrl || 'assets/images/default-album.jpg'" 
+          [alt]="currentSong.albumName"
+          class="album-art"
+          [class.playing]="isPlaying()"
+          onerror="this.src='assets/images/default-album.jpg'">
+        
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" *ngIf="isLoading()">
+          <mat-progress-bar mode="indeterminate" color="primary"></mat-progress-bar>
+        </div>
+      </div>
+    </div>
+
+    <!-- Player Controls Section -->
+    <div class="player-controls-section">
+      <mat-card class="player-card">
+        <!-- Song Info -->
+        <div class="song-info">
+          <div class="song-details">
+            <h2 class="song-title">{{ currentSong.title }}</h2>
+            <p class="song-artist">{{ currentSong.artistName }}</p>
+            <p class="song-album">{{ currentSong.albumName }} • {{ currentSong.genre }}</p>
+          </div>
+          
+          <button 
+            mat-icon-button 
+            [color]="isFavorite ? 'warn' : ''"
+            (click)="toggleFavorite()"
+            [matTooltip]="isFavorite ? 'Remove from favorites' : 'Add to favorites'">
+            <mat-icon>{{ isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+          </button>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-section">
+          <span class="time-current">{{ currentTimeFormatted }}</span>
+          <mat-slider 
+            class="progress-slider"
+            [min]="0" 
+            [max]="100" 
+            [disabled]="!currentSong">
+            <input matSliderThumb [value]="progress" (input)="onProgressChange($any($event.target).value)">
+          </mat-slider>
+          <span class="time-duration">{{ durationFormatted }}</span>
+        </div>
+
+        <!-- Main Controls -->
+        <div class="main-controls">
+          <button 
+            mat-icon-button
+            [color]="getShuffleColor()"
+            (click)="toggleShuffle()"
+            matTooltip="Toggle shuffle">
+            <mat-icon>shuffle</mat-icon>
+          </button>
+
+          <button 
+            mat-icon-button
+            class="control-btn"
+            (click)="playPrevious()"
+            matTooltip="Previous">
+            <mat-icon>skip_previous</mat-icon>
+          </button>
+
+          <button 
+            mat-fab
+            color="primary"
+            class="play-button"
+            (click)="togglePlayPause()"
+            [disabled]="isLoading()"
+            [matTooltip]="isPlaying() ? 'Pause' : 'Play'">
+            <mat-icon>{{ getPlayPauseIcon() }}</mat-icon>
+          </button>
+
+          <button 
+            mat-icon-button
+            class="control-btn"
+            (click)="playNext()"
+            matTooltip="Next">
+            <mat-icon>skip_next</mat-icon>
+          </button>
+
+          <button 
+            mat-icon-button
+            [color]="getRepeatColor()"
+            (click)="toggleRepeat()"
+            [matTooltip]="'Repeat: ' + (audioState?.repeatMode || 'off')">
+            <mat-icon>{{ getRepeatIcon() }}</mat-icon>
+          </button>
+        </div>
+
+        <!-- Volume Control -->
+        <div class="volume-control">
+          <button 
+            mat-icon-button
+            (click)="toggleMute()"
+            matTooltip="Toggle mute">
+            <mat-icon>{{ getVolumeIcon() }}</mat-icon>
+          </button>
+          
+          <mat-slider 
+            class="volume-slider"
+            [min]="0" 
+            [max]="100">
+            <input matSliderThumb [value]="volume" (input)="onVolumeChange($any($event.target).value)">
+          </mat-slider>
+          
+          <span class="volume-value">{{ volume }}%</span>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+</div>

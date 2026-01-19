@@ -1,0 +1,9 @@
+.app-container {
+  min-height: calc(100vh - 64px);
+  padding: 24px;
+  background-color: var(--background-color);
+  
+  @media (max-width: 600px) {
+    padding: 16px;
+  }
+}

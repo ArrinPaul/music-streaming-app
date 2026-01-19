@@ -1,0 +1,130 @@
+<div class="playlist-detail-container" *ngIf="!isLoading && playlist">
+  <!-- Playlist Header -->
+  <div class="playlist-header">
+    <button mat-icon-button class="back-button" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+
+    <div class="header-content">
+      <div class="playlist-cover">
+        <div class="cover-placeholder">
+          <mat-icon>playlist_play</mat-icon>
+        </div>
+      </div>
+
+      <div class="playlist-info">
+        <p class="playlist-label">Playlist</p>
+        <h1 class="playlist-name">{{ playlist.name }}</h1>
+        <p class="playlist-description" *ngIf="playlist.description">
+          {{ playlist.description }}
+        </p>
+        <div class="playlist-meta">
+          <span class="meta-item">
+            <mat-icon>music_note</mat-icon>
+            {{ playlist.songs.length }} songs
+          </span>
+          <span class="meta-item" *ngIf="playlist.songs.length > 0">
+            <mat-icon>schedule</mat-icon>
+            {{ formatTotalDuration() }}
+          </span>
+          <span class="meta-item">
+            <mat-icon>calendar_today</mat-icon>
+            {{ playlist.updatedDate | date: 'mediumDate' }}
+          </span>
+        </div>
+
+        <div class="action-buttons">
+          <button 
+            mat-raised-button 
+            color="primary" 
+            (click)="playAll()"
+            [disabled]="playlist.songs.length === 0">
+            <mat-icon>play_arrow</mat-icon>
+            Play All
+          </button>
+          <button 
+            mat-raised-button 
+            (click)="shufflePlay()"
+            [disabled]="playlist.songs.length === 0">
+            <mat-icon>shuffle</mat-icon>
+            Shuffle
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Songs List -->
+  <div class="songs-section" *ngIf="playlist.songs.length > 0">
+    <div class="songs-header">
+      <span class="col-number">#</span>
+      <span class="col-title">Title</span>
+      <span class="col-album">Album</span>
+      <span class="col-duration">Duration</span>
+      <span class="col-actions">Actions</span>
+    </div>
+
+    <div class="songs-list">
+      <div 
+        *ngFor="let song of playlist.songs; let i = index" 
+        class="song-item"
+        [class.current-song]="isCurrentSong(song.id)">
+        
+        <div class="col-number">
+          <span *ngIf="!isCurrentSongPlaying(song.id)">{{ i + 1 }}</span>
+          <mat-icon *ngIf="isCurrentSongPlaying(song.id)" class="playing-icon">volume_up</mat-icon>
+        </div>
+
+        <div class="col-title">
+          <img [src]="song.coverImageUrl" [alt]="song.title" class="song-thumbnail">
+          <div class="song-info">
+            <div class="song-title">{{ song.title }}</div>
+            <div class="song-artist">{{ song.artistName }}</div>
+          </div>
+        </div>
+
+        <div class="col-album">{{ song.albumName }}</div>
+
+        <div class="col-duration">{{ formatDuration(song.duration) }}</div>
+
+        <div class="col-actions">
+          <button 
+            mat-icon-button 
+            (click)="playSong(song)"
+            [matTooltip]="isCurrentSongPlaying(song.id) ? 'Pause' : 'Play'">
+            <mat-icon>{{ isCurrentSongPlaying(song.id) ? 'pause' : 'play_arrow' }}</mat-icon>
+          </button>
+          
+          <button 
+            mat-icon-button 
+            (click)="toggleFavorite(song)"
+            [matTooltip]="isFavorite(song.id) ? 'Remove from favorites' : 'Add to favorites'">
+            <mat-icon [class.favorite]="isFavorite(song.id)">
+              {{ isFavorite(song.id) ? 'favorite' : 'favorite_border' }}
+            </mat-icon>
+          </button>
+
+          <button 
+            mat-icon-button 
+            (click)="removeSong(song)"
+            matTooltip="Remove from playlist">
+            <mat-icon>remove_circle_outline</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="playlist.songs.length === 0">
+    <mat-icon>music_off</mat-icon>
+    <h2>No Songs in This Playlist</h2>
+    <p>Add some songs to get started</p>
+  </div>
+</div>
+
+<!-- Loading State -->
+<div *ngIf="isLoading" class="loading-container">
+  <mat-spinner></mat-spinner>
+  <p>Loading playlist...</p>
+</div>

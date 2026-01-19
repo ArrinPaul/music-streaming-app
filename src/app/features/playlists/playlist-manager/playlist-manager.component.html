@@ -1,0 +1,96 @@
+<div class="playlist-manager-container">
+  <!-- Header -->
+  <div class="header">
+    <h1>Your Playlists</h1>
+    <button mat-raised-button color="primary" (click)="openCreateDialog()">
+      <mat-icon>add</mat-icon>
+      Create Playlist
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Loading playlists...</p>
+  </div>
+
+  <!-- Playlists Grid -->
+  <div *ngIf="!isLoading && playlists.length > 0" class="playlists-grid">
+    <mat-card *ngFor="let playlist of playlists" class="playlist-card">
+      <!-- Playlist Cover -->
+      <div class="playlist-cover" (click)="viewPlaylist(playlist.id)">
+        <div class="cover-grid" *ngIf="playlist.songs.length > 0">
+          <div class="placeholder-cover">
+            <mat-icon>playlist_play</mat-icon>
+          </div>
+        </div>
+        <div class="empty-cover" *ngIf="playlist.songs.length === 0">
+          <mat-icon>music_note</mat-icon>
+        </div>
+        <div class="play-overlay">
+          <button mat-fab color="primary">
+            <mat-icon>play_arrow</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Playlist Info -->
+      <mat-card-content class="playlist-info">
+        <h2 class="playlist-name">{{ playlist.name }}</h2>
+        <p class="playlist-description" *ngIf="playlist.description">
+          {{ playlist.description }}
+        </p>
+        <div class="playlist-stats">
+          <span class="stat">
+            <mat-icon>music_note</mat-icon>
+            {{ playlist.songs.length }} songs
+          </span>
+          <span class="stat" *ngIf="playlist.songs.length > 0">
+            <mat-icon>schedule</mat-icon>
+            {{ formatDuration(getTotalDuration(playlist)) }}
+          </span>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="playlist-actions">
+          <button 
+            mat-raised-button 
+            color="primary" 
+            (click)="viewPlaylist(playlist.id)">
+            <mat-icon>visibility</mat-icon>
+            View
+          </button>
+          
+          <button 
+            mat-icon-button 
+            [matMenuTriggerFor]="menu"
+            (click)="$event.stopPropagation()">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="openEditDialog(playlist)">
+              <mat-icon>edit</mat-icon>
+              <span>Edit</span>
+            </button>
+            <button mat-menu-item (click)="deletePlaylist(playlist.id, playlist.name)">
+              <mat-icon>delete</mat-icon>
+              <span>Delete</span>
+            </button>
+          </mat-menu>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && playlists.length === 0" class="empty-state">
+    <mat-icon>queue_music</mat-icon>
+    <h2>No Playlists Yet</h2>
+    <p>Create your first playlist to organize your favorite music</p>
+    <button mat-raised-button color="primary" (click)="openCreateDialog()">
+      <mat-icon>add</mat-icon>
+      Create Your First Playlist
+    </button>
+  </div>
+</div>

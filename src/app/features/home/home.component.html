@@ -1,0 +1,142 @@
+<div class="home-container">
+  <div class="welcome-section">
+    <h1>Welcome to Music Streaming</h1>
+    <p>Discover and enjoy your favorite music</p>
+  </div>
+
+  <mat-tab-group class="content-tabs" animationDuration="300ms">
+    <!-- Songs Tab -->
+    <mat-tab label="Songs">
+      <div class="tab-content">
+        <div class="header-actions">
+          <h2>All Songs</h2>
+          <button mat-raised-button color="primary" routerLink="/songs">
+            <mat-icon>library_music</mat-icon>
+            View All Songs
+          </button>
+        </div>
+
+        <div *ngIf="loading" class="loading-container">
+          <p>Loading songs...</p>
+        </div>
+
+        <mat-card *ngIf="!loading && songs.length > 0" class="content-card">
+          <mat-card-content>
+            <table mat-table [dataSource]="recentSongs" class="songs-table">
+              <!-- Title Column -->
+              <ng-container matColumnDef="title">
+                <th mat-header-cell *matHeaderCellDef>Title</th>
+                <td mat-cell *matCellDef="let song">{{ song.title }}</td>
+              </ng-container>
+
+              <!-- Artist Column -->
+              <ng-container matColumnDef="artist">
+                <th mat-header-cell *matHeaderCellDef>Artist</th>
+                <td mat-cell *matCellDef="let song">{{ song.artist }}</td>
+              </ng-container>
+
+              <!-- Album Column -->
+              <ng-container matColumnDef="album">
+                <th mat-header-cell *matHeaderCellDef>Album</th>
+                <td mat-cell *matCellDef="let song">{{ song.album }}</td>
+              </ng-container>
+
+              <!-- Duration Column -->
+              <ng-container matColumnDef="duration">
+                <th mat-header-cell *matHeaderCellDef>Duration</th>
+                <td mat-cell *matCellDef="let song">{{ song.duration | durationFormat }}</td>
+              </ng-container>
+
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let song">
+                  <button mat-icon-button color="primary" (click)="playSong(song)">
+                    <mat-icon>play_arrow</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="songColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: songColumns;"></tr>
+            </table>
+          </mat-card-content>
+        </mat-card>
+
+        <div *ngIf="!loading && songs.length === 0" class="empty-state">
+          <mat-icon>music_off</mat-icon>
+          <p>No songs available</p>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- Artists Tab -->
+    <mat-tab label="Artists">
+      <div class="tab-content">
+        <div class="header-actions">
+          <h2>Featured Artists</h2>
+          <button mat-raised-button color="primary" routerLink="/artists">
+            <mat-icon>people</mat-icon>
+            View All Artists
+          </button>
+        </div>
+
+        <div *ngIf="artists.length > 0" class="artists-grid">
+          <mat-card *ngFor="let artist of artists.slice(0, 6)" class="artist-card">
+            <img mat-card-image [src]="artist.imageUrl" [alt]="artist.name" class="artist-image">
+            <mat-card-content>
+              <h3>{{ artist.name }}</h3>
+              <p class="genre">{{ artist.genres && artist.genres[0] }}</p>
+            </mat-card-content>
+            <mat-card-actions>
+              <button mat-button color="primary" (click)="viewArtist(artist)">
+                <mat-icon>arrow_forward</mat-icon>
+                View Artist
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+
+        <div *ngIf="artists.length === 0" class="empty-state">
+          <mat-icon>person_off</mat-icon>
+          <p>No artists available</p>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- Albums Tab -->
+    <mat-tab label="Albums">
+      <div class="tab-content">
+        <div class="header-actions">
+          <h2>Popular Albums</h2>
+          <button mat-raised-button color="primary" routerLink="/playlists">
+            <mat-icon>album</mat-icon>
+            Browse Albums
+          </button>
+        </div>
+
+        <div *ngIf="albums.length > 0" class="albums-grid">
+          <mat-card *ngFor="let album of albums.slice(0, 6)" class="album-card">
+            <img mat-card-image [src]="album.coverImageUrl" [alt]="album.title" class="album-image">
+            <mat-card-content>
+              <h3>{{ album.title }}</h3>
+              <p class="artist-name">{{ album.artistName }}</p>
+              <p class="year">{{ album.releaseDate | date: 'yyyy' }}</p>
+            </mat-card-content>
+            <mat-card-actions>
+              <button mat-button color="primary" (click)="viewAlbum(album)">
+                <mat-icon>play_arrow</mat-icon>
+                Play Album
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+
+        <div *ngIf="albums.length === 0" class="empty-state">
+          <mat-icon>album</mat-icon>
+          <p>No albums available</p>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

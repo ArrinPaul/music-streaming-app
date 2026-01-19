@@ -1,0 +1,147 @@
+<div class="feedback-container">
+  <mat-card class="feedback-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon class="feedback-icon">feedback</mat-icon>
+        <h1>We'd Love Your Feedback</h1>
+      </mat-card-title>
+      <mat-card-subtitle>Help us improve your music streaming experience</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form #feedbackForm="ngForm" (ngSubmit)="onSubmit(feedbackForm)" class="feedback-form">
+        <!-- Name Field -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Name</mat-label>
+          <input
+            matInput
+            type="text"
+            name="name"
+            [(ngModel)]="feedbackData.name"
+            required
+            minlength="2"
+            maxlength="50"
+            #nameField="ngModel"
+            placeholder="Enter your name"
+          >
+          <mat-icon matPrefix>person</mat-icon>
+          <mat-hint align="end">{{feedbackData.name.length}} / 50</mat-hint>
+          <mat-error *ngIf="nameField.invalid && nameField.touched">
+            <span *ngIf="nameField.errors?.['required']">Name is required</span>
+            <span *ngIf="nameField.errors?.['minlength']">Name must be at least 2 characters</span>
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Email Field -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input
+            matInput
+            type="email"
+            name="email"
+            [(ngModel)]="feedbackData.email"
+            required
+            email
+            #emailField="ngModel"
+            placeholder="your.email@example.com"
+          >
+          <mat-icon matPrefix>email</mat-icon>
+          <mat-error *ngIf="emailField.invalid && emailField.touched">
+            <span *ngIf="emailField.errors?.['required']">Email is required</span>
+            <span *ngIf="emailField.errors?.['email']">Please enter a valid email</span>
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Category Dropdown -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Category</mat-label>
+          <mat-select
+            name="category"
+            [(ngModel)]="feedbackData.category"
+            required
+            #categoryField="ngModel"
+          >
+            <mat-option *ngFor="let category of categories" [value]="category.value">
+              {{category.label}}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>category</mat-icon>
+          <mat-error *ngIf="categoryField.invalid && categoryField.touched">
+            Please select a category
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Rating Radio Buttons -->
+        <div class="rating-section">
+          <label class="rating-label">How would you rate your experience?</label>
+          <mat-radio-group
+            name="rating"
+            [(ngModel)]="feedbackData.rating"
+            required
+            #ratingField="ngModel"
+            class="rating-group"
+          >
+            <mat-radio-button
+              *ngFor="let rating of ratings"
+              [value]="rating.value"
+              color="primary"
+            >
+              {{rating.label}}
+            </mat-radio-button>
+          </mat-radio-group>
+          <div class="rating-error" *ngIf="ratingField.invalid && ratingField.touched">
+            Please select a rating
+          </div>
+        </div>
+
+        <!-- Message Textarea -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Your Message</mat-label>
+          <textarea
+            matInput
+            name="message"
+            [(ngModel)]="feedbackData.message"
+            required
+            minlength="10"
+            maxlength="500"
+            #messageField="ngModel"
+            rows="5"
+            placeholder="Tell us what's on your mind..."
+          ></textarea>
+          <mat-icon matPrefix>message</mat-icon>
+          <mat-hint align="end">{{feedbackData.message.length}} / 500</mat-hint>
+          <mat-error *ngIf="messageField.invalid && messageField.touched">
+            <span *ngIf="messageField.errors?.['required']">Message is required</span>
+            <span *ngIf="messageField.errors?.['minlength']">
+              Message must be at least 10 characters
+            </span>
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Action Buttons -->
+        <div class="form-actions">
+          <button
+            mat-raised-button
+            type="button"
+            (click)="onReset(feedbackForm)"
+            [disabled]="isLoading"
+          >
+            <mat-icon>refresh</mat-icon>
+            Reset
+          </button>
+
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="!feedbackForm.valid || isLoading"
+          >
+            <mat-icon>send</mat-icon>
+            <span *ngIf="!isLoading">Submit Feedback</span>
+            <span *ngIf="isLoading">Submitting...</span>
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

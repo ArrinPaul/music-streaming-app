@@ -1,0 +1,145 @@
+<div class="artist-detail-container" *ngIf="!isLoading && artist">
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-background" [style.backgroundImage]="'url(' + artist.imageUrl + ')'"></div>
+    <div class="hero-content">
+      <button mat-icon-button class="back-button" (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      
+      <div class="artist-header">
+        <img [src]="artist.imageUrl" [alt]="artist.name" class="artist-image">
+        <div class="artist-info">
+          <div class="verified-badge" *ngIf="artist.verified">
+            <mat-icon>verified</mat-icon>
+            <span>Verified Artist</span>
+          </div>
+          <h1 class="artist-name">{{ artist.name }}</h1>
+          <div class="listeners-count">
+            <mat-icon>people</mat-icon>
+            <span>{{ formatListeners(artist.monthlyListeners || 0) }} monthly listeners</span>
+          </div>
+          <div class="genres">
+            <mat-chip *ngFor="let genre of artist.genres">{{ genre }}</mat-chip>
+          </div>
+          <div class="action-buttons">
+            <button mat-raised-button color="primary" (click)="playAll()">
+              <mat-icon>play_arrow</mat-icon>
+              Play All
+            </button>
+            <button mat-raised-button (click)="shufflePlay()">
+              <mat-icon>shuffle</mat-icon>
+              Shuffle
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Artist Biography -->
+  <div class="bio-section" *ngIf="artist.biography">
+    <h2>About</h2>
+    <p class="bio-text">{{ artist.biography }}</p>
+  </div>
+
+  <!-- Social Links -->
+  <div class="social-links" *ngIf="artist.socialLinks">
+    <button 
+      mat-icon-button 
+      *ngIf="artist.socialLinks.spotify"
+      (click)="openSocialLink(artist.socialLinks.spotify)"
+      matTooltip="Spotify">
+      <mat-icon>music_note</mat-icon>
+    </button>
+    <button 
+      mat-icon-button 
+      *ngIf="artist.socialLinks.instagram"
+      (click)="openSocialLink(artist.socialLinks.instagram)"
+      matTooltip="Instagram">
+      <mat-icon>camera_alt</mat-icon>
+    </button>
+    <button 
+      mat-icon-button 
+      *ngIf="artist.socialLinks.twitter"
+      (click)="openSocialLink(artist.socialLinks.twitter)"
+      matTooltip="Twitter">
+      <mat-icon>tag</mat-icon>
+    </button>
+    <button 
+      mat-icon-button 
+      *ngIf="artist.socialLinks.website"
+      (click)="openSocialLink(artist.socialLinks.website)"
+      matTooltip="Website">
+      <mat-icon>language</mat-icon>
+    </button>
+  </div>
+
+  <!-- Top Songs Section -->
+  <div class="top-songs-section" *ngIf="topSongs.length > 0">
+    <h2>Popular Tracks</h2>
+    <div class="songs-list">
+      <div 
+        *ngFor="let song of topSongs; let i = index" 
+        class="song-item"
+        [class.current-song]="isCurrentSong(song.id)">
+        
+        <div class="song-number">
+          <span *ngIf="!isCurrentSongPlaying(song.id)">{{ i + 1 }}</span>
+          <mat-icon *ngIf="isCurrentSongPlaying(song.id)" class="playing-icon">volume_up</mat-icon>
+        </div>
+
+        <img [src]="song.coverImageUrl" [alt]="song.title" class="song-thumbnail">
+
+        <div class="song-info">
+          <div class="song-title">{{ song.title }}</div>
+          <div class="song-stats">
+            <mat-icon>play_arrow</mat-icon>
+            <span>{{ (song.playCount || 0).toLocaleString() }} plays</span>
+          </div>
+        </div>
+
+        <div class="song-duration">{{ formatDuration(song.duration) }}</div>
+
+        <div class="song-actions">
+          <button 
+            mat-icon-button 
+            (click)="playSong(song)"
+            [matTooltip]="isCurrentSongPlaying(song.id) ? 'Pause' : 'Play'">
+            <mat-icon>{{ isCurrentSongPlaying(song.id) ? 'pause' : 'play_arrow' }}</mat-icon>
+          </button>
+          
+          <button 
+            mat-icon-button 
+            (click)="toggleFavorite(song)"
+            [matTooltip]="isFavorite(song.id) ? 'Remove from favorites' : 'Add to favorites'">
+            <mat-icon [class.favorite]="isFavorite(song.id)">
+              {{ isFavorite(song.id) ? 'favorite' : 'favorite_border' }}
+            </mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Albums Section -->
+  <div class="albums-section" *ngIf="albums.length > 0">
+    <h2>Albums</h2>
+    <div class="albums-grid">
+      <mat-card *ngFor="let album of albums" class="album-card" (click)="viewAlbum(album.id)">
+        <img [src]="album.coverImageUrl" [alt]="album.title" class="album-cover">
+        <mat-card-content>
+          <h3 class="album-title">{{ album.title }}</h3>
+          <p class="album-year">{{ album.releaseDate | date: 'yyyy' }}</p>
+          <p class="album-tracks">{{ album.trackCount }} tracks</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>
+
+<!-- Loading State -->
+<div *ngIf="isLoading" class="loading-container">
+  <mat-spinner></mat-spinner>
+  <p>Loading artist details...</p>
+</div>

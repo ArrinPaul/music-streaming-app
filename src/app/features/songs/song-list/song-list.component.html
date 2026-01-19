@@ -1,0 +1,151 @@
+<div class="song-list-container">
+  <!-- Header Section -->
+  <div class="header">
+    <h1>Songs</h1>
+    <p class="subtitle">Browse and play your favorite music</p>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search songs, artists, albums...</mat-label>
+      <input 
+        matInput 
+        [(ngModel)]="searchQuery" 
+        (ngModelChange)="onSearchChange()"
+        placeholder="Type to search...">
+      <mat-icon matPrefix>search</mat-icon>
+      <button 
+        *ngIf="searchQuery" 
+        matSuffix 
+        mat-icon-button 
+        (click)="searchQuery = ''; onSearchChange()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="genre-field">
+      <mat-label>Filter by Genre</mat-label>
+      <mat-select [(ngModel)]="selectedGenre" (selectionChange)="onGenreChange()">
+        <mat-option *ngFor="let genre of genres" [value]="genre">
+          {{ genre === 'all' ? 'All Genres' : genre }}
+        </mat-option>
+      </mat-select>
+      <mat-icon matPrefix>filter_list</mat-icon>
+    </mat-form-field>
+  </div>
+
+  <!-- Results Info -->
+  <div class="results-info" *ngIf="!loading">
+    <span>{{ filteredSongs.length }} song{{ filteredSongs.length !== 1 ? 's' : '' }} found</span>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+    <p>Loading songs...</p>
+  </div>
+
+  <!-- Song List -->
+  <div class="songs-grid" *ngIf="!loading && filteredSongs.length > 0">
+    <mat-card 
+      *ngFor="let song of filteredSongs" 
+      class="song-card"
+      [class.playing]="currentlyPlayingSongId === song.id"
+      (click)="playSong(song)">
+      
+      <!-- Album Cover -->
+      <div class="album-cover">
+        <img 
+          [src]="song.coverImageUrl || 'assets/images/default-album.jpg'" 
+          [alt]="song.albumName"
+          onerror="this.src='assets/images/default-album.jpg'">
+        
+        <!-- Play/Pause Overlay -->
+        <div class="play-overlay">
+          <button 
+            mat-fab 
+            color="primary" 
+            (click)="togglePlayPause(song); $event.stopPropagation()">
+            <mat-icon>{{ getPlayIcon(song) }}</mat-icon>
+          </button>
+        </div>
+
+        <!-- Playing Indicator -->
+        <div class="playing-indicator" *ngIf="isPlaying(song)">
+          <mat-icon>equalizer</mat-icon>
+        </div>
+      </div>
+
+      <!-- Song Info -->
+      <mat-card-content>
+        <div class="song-info">
+          <h3 class="song-title" [matTooltip]="song.title">{{ song.title }}</h3>
+          <p class="song-artist" [matTooltip]="song.artistName">{{ song.artistName }}</p>
+          <p class="song-album" [matTooltip]="song.albumName">{{ song.albumName }}</p>
+          
+          <!-- Genre Chip -->
+          <mat-chip-set class="genre-chip">
+            <mat-chip>{{ song.genre }}</mat-chip>
+          </mat-chip-set>
+        </div>
+      </mat-card-content>
+
+      <!-- Actions -->
+      <mat-card-actions>
+        <div class="song-actions">
+          <span class="duration">{{ formatDuration(song.duration) }}</span>
+          
+          <div class="action-buttons">
+            <button 
+              mat-icon-button 
+              [color]="isFavorite(song) ? 'warn' : ''"
+              (click)="toggleFavorite(song, $event)"
+              [matTooltip]="isFavorite(song) ? 'Remove from favorites' : 'Add to favorites'">
+              <mat-icon>{{ isFavorite(song) ? 'favorite' : 'favorite_border' }}</mat-icon>
+            </button>
+
+            <button 
+              mat-icon-button 
+              [matMenuTriggerFor]="songMenu"
+              (click)="$event.stopPropagation()"
+              matTooltip="More options">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+
+            <mat-menu #songMenu="matMenu">
+              <button mat-menu-item (click)="playSong(song)">
+                <mat-icon>play_arrow</mat-icon>
+                <span>Play Now</span>
+              </button>
+              <button mat-menu-item (click)="addToPlaylist(song, $event)">
+                <mat-icon>playlist_add</mat-icon>
+                <span>Add to Playlist</span>
+              </button>
+              <button mat-menu-item>
+                <mat-icon>album</mat-icon>
+                <span>View Album</span>
+              </button>
+              <button mat-menu-item>
+                <mat-icon>person</mat-icon>
+                <span>View Artist</span>
+              </button>
+            </mat-menu>
+          </div>
+        </div>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!loading && filteredSongs.length === 0">
+    <mat-icon>music_off</mat-icon>
+    <h2>No songs found</h2>
+    <p *ngIf="searchQuery || selectedGenre !== 'all'">
+      Try adjusting your search or filters
+    </p>
+    <button mat-raised-button color="primary" (click)="searchQuery = ''; selectedGenre = 'all'; applyFilters()">
+      Clear Filters
+    </button>
+  </div>
+</div>

@@ -1,0 +1,111 @@
+[
+  {
+    "id": "artist-1",
+    "name": "Queen",
+    "biography": "Queen are a British rock band formed in London in 1970. The band has released a total of 18 number-one albums, 18 number-one singles and 10 number-one DVDs.",
+    "imageUrl": "assets/images/artist-queen.jpg",
+    "genres": ["Rock", "Progressive Rock", "Hard Rock"],
+    "monthlyListeners": 45000000,
+    "verified": true,
+    "socialLinks": {
+      "website": "https://www.queenonline.com",
+      "spotify": "https://open.spotify.com/artist/1dfeR4HaWDbWqFHLkxsg1d",
+      "twitter": "https://twitter.com/QueenWillRock"
+    }
+  },
+  {
+    "id": "artist-2",
+    "name": "Michael Jackson",
+    "biography": "Michael Joseph Jackson was an American singer, songwriter, and dancer. Dubbed the King of Pop, he is regarded as one of the most significant cultural figures of the 20th century.",
+    "imageUrl": "assets/images/artist-mj.jpg",
+    "genres": ["Pop", "R&B", "Soul"],
+    "monthlyListeners": 38000000,
+    "verified": true,
+    "socialLinks": {
+      "website": "https://www.michaeljackson.com",
+      "spotify": "https://open.spotify.com/artist/3fMbdgg4jU18AjLCKBhRSm"
+    }
+  },
+  {
+    "id": "artist-3",
+    "name": "Nirvana",
+    "biography": "Nirvana was an American rock band formed in Aberdeen, Washington, in 1987. Founded by lead singer and guitarist Kurt Cobain and bassist Krist Novoselic.",
+    "imageUrl": "assets/images/artist-nirvana.jpg",
+    "genres": ["Grunge", "Alternative", "Rock"],
+    "monthlyListeners": 28000000,
+    "verified": true
+  },
+  {
+    "id": "artist-4",
+    "name": "Eagles",
+    "biography": "The Eagles are an American rock band formed in Los Angeles in 1971. With five number-one singles and six number-one albums, six Grammy Awards.",
+    "imageUrl": "assets/images/artist-eagles.jpg",
+    "genres": ["Rock", "Country Rock", "Soft Rock"],
+    "monthlyListeners": 24000000,
+    "verified": true
+  },
+  {
+    "id": "artist-5",
+    "name": "The Weeknd",
+    "biography": "Abel Makkonen Tesfaye, known professionally as The Weeknd, is a Canadian singer, songwriter, and record producer. Known for his sonic versatility and dark lyricism.",
+    "imageUrl": "assets/images/artist-weeknd.jpg",
+    "genres": ["Pop", "R&B", "Alternative R&B"],
+    "monthlyListeners": 92000000,
+    "verified": true,
+    "socialLinks": {
+      "website": "https://www.theweeknd.com",
+      "spotify": "https://open.spotify.com/artist/1Xyo4u8uXC1ZmMpatF05PJ",
+      "instagram": "https://instagram.com/theweeknd"
+    }
+  },
+  {
+    "id": "artist-6",
+    "name": "Dave Brubeck Quartet",
+    "biography": "The Dave Brubeck Quartet was a jazz quartet founded in 1951 by Dave Brubeck and featuring Paul Desmond on saxophone.",
+    "imageUrl": "assets/images/artist-brubeck.jpg",
+    "genres": ["Jazz", "Cool Jazz"],
+    "monthlyListeners": 3500000,
+    "verified": true
+  },
+  {
+    "id": "artist-7",
+    "name": "Earth, Wind & Fire",
+    "biography": "Earth, Wind & Fire is an American band that has spanned the musical genres of R&B, soul, funk, jazz, disco, pop, rock, dance, Latin, and Afro pop.",
+    "imageUrl": "assets/images/artist-ewf.jpg",
+    "genres": ["R&B", "Funk", "Soul"],
+    "monthlyListeners": 12000000,
+    "verified": true
+  },
+  {
+    "id": "artist-8",
+    "name": "Ed Sheeran",
+    "biography": "Edward Christopher Sheeran is an English singer-songwriter. Born in Halifax, West Yorkshire, he was brought up in Framlingham, Suffolk.",
+    "imageUrl": "assets/images/artist-ed-sheeran.jpg",
+    "genres": ["Pop", "Folk", "Acoustic"],
+    "monthlyListeners": 85000000,
+    "verified": true,
+    "socialLinks": {
+      "website": "https://www.edsheeran.com",
+      "spotify": "https://open.spotify.com/artist/6eUKZXaKkcviH0Ku9w2n3V",
+      "instagram": "https://instagram.com/teddysphotos"
+    }
+  },
+  {
+    "id": "artist-9",
+    "name": "Guns N' Roses",
+    "biography": "Guns N' Roses is an American hard rock band from Los Angeles, California, formed in 1985. The lineup has changed many times.",
+    "imageUrl": "assets/images/artist-gnr.jpg",
+    "genres": ["Hard Rock", "Heavy Metal"],
+    "monthlyListeners": 32000000,
+    "verified": true
+  },
+  {
+    "id": "artist-10",
+    "name": "Gnarls Barkley",
+    "biography": "Gnarls Barkley is an American soul duo composed of singer-songwriter CeeLo Green and producer Danger Mouse.",
+    "imageUrl": "assets/images/artist-gnarls.jpg",
+    "genres": ["Alternative", "Soul", "Neo Soul"],
+    "monthlyListeners": 5500000,
+    "verified": true
+  }
+]

@@ -1,0 +1,97 @@
+<div class="artist-list-container">
+  <!-- Header -->
+  <div class="header">
+    <h1>Artists</h1>
+    
+    <!-- Search -->
+    <mat-form-field class="search-field" appearance="outline">
+      <mat-label>Search artists</mat-label>
+      <input 
+        matInput 
+        [(ngModel)]="searchQuery" 
+        (ngModelChange)="onSearchChange()"
+        placeholder="Search by name or bio...">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+  </div>
+
+  <!-- Genre Filter -->
+  <div class="genre-filter">
+    <h3>Filter by Genre:</h3>
+    <mat-chip-listbox class="genre-chips">
+      <mat-chip-option 
+        *ngFor="let genre of genres"
+        [selected]="isGenreSelected(genre)"
+        (click)="selectGenre(genre)">
+        {{ genre }}
+      </mat-chip-option>
+    </mat-chip-listbox>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Loading artists...</p>
+  </div>
+
+  <!-- Artists Grid -->
+  <div *ngIf="!isLoading && filteredArtists.length > 0" class="artists-grid">
+    <mat-card 
+      *ngFor="let artist of filteredArtists" 
+      class="artist-card"
+      (click)="viewArtistDetail(artist.id)">
+      
+      <!-- Artist Image -->
+      <div class="artist-image-container">
+        <img 
+          [src]="artist.imageUrl" 
+          [alt]="artist.name"
+          class="artist-image">
+        <div class="verified-badge" *ngIf="artist.verified" matTooltip="Verified Artist">
+          <mat-icon>verified</mat-icon>
+        </div>
+      </div>
+
+      <!-- Artist Info -->
+      <mat-card-content class="artist-info">
+        <h2 class="artist-name">{{ artist.name }}</h2>
+        
+        <div class="listeners-info">
+          <mat-icon>people</mat-icon>
+          <span>{{ formatListeners(artist.monthlyListeners) }} monthly listeners</span>
+        </div>
+
+        <!-- Genres -->
+        <div class="artist-genres">
+          <mat-chip *ngFor="let genre of artist.genres" class="genre-chip">
+            {{ genre }}
+          </mat-chip>
+        </div>
+
+        <!-- View Button -->
+        <button 
+          mat-raised-button 
+          color="primary" 
+          class="view-button"
+          (click)="viewArtistDetail(artist.id); $event.stopPropagation()">
+          <mat-icon>person</mat-icon>
+          View Profile
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && filteredArtists.length === 0" class="empty-state">
+    <mat-icon>music_off</mat-icon>
+    <h2>No Artists Found</h2>
+    <p>{{ searchQuery || selectedGenre ? 'Try adjusting your search or filters' : 'No artists available' }}</p>
+    <button 
+      mat-raised-button 
+      color="primary" 
+      *ngIf="searchQuery || selectedGenre"
+      (click)="searchQuery = ''; selectedGenre = null; filterArtists()">
+      Clear Filters
+    </button>
+  </div>
+</div>

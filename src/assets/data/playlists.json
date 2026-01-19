@@ -1,0 +1,46 @@
+[
+  {
+    "id": "playlist-1",
+    "name": "My Favorites",
+    "description": "My all-time favorite songs",
+    "coverImageUrl": "assets/images/playlist-favorites.jpg",
+    "songs": [],
+    "createdDate": "2025-01-01T00:00:00.000Z",
+    "updatedDate": "2026-01-18T00:00:00.000Z",
+    "isPublic": false,
+    "ownerId": "user-1"
+  },
+  {
+    "id": "playlist-2",
+    "name": "Rock Classics",
+    "description": "The best rock songs from the 70s, 80s, and 90s",
+    "coverImageUrl": "assets/images/playlist-rock.jpg",
+    "songs": [],
+    "createdDate": "2025-06-15T00:00:00.000Z",
+    "updatedDate": "2026-01-15T00:00:00.000Z",
+    "isPublic": true,
+    "ownerId": "user-1"
+  },
+  {
+    "id": "playlist-3",
+    "name": "Workout Mix",
+    "description": "High-energy songs to keep you motivated",
+    "coverImageUrl": "assets/images/playlist-workout.jpg",
+    "songs": [],
+    "createdDate": "2025-09-20T00:00:00.000Z",
+    "updatedDate": "2026-01-10T00:00:00.000Z",
+    "isPublic": false,
+    "ownerId": "user-1"
+  },
+  {
+    "id": "playlist-4",
+    "name": "Chill Vibes",
+    "description": "Relaxing tunes for unwinding",
+    "coverImageUrl": "assets/images/playlist-chill.jpg",
+    "songs": [],
+    "createdDate": "2025-11-05T00:00:00.000Z",
+    "updatedDate": "2026-01-18T00:00:00.000Z",
+    "isPublic": true,
+    "ownerId": "user-1"
+  }
+]

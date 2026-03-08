@@ -5,8 +5,13 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { MusicService } from '../../core/services/music.service';
+import { AudioService } from '../../core/services/audio.service';
+import { AiRecommendationService, MusicMood } from '../../core/services/ai-recommendation.service';
 import { Song, Artist, Album } from '../../core/models';
 import { DurationFormatPipe } from '../../shared/pipes/duration-format.pipe';
 
@@ -21,6 +26,9 @@ import { DurationFormatPipe } from '../../shared/pipes/duration-format.pipe';
     MatButtonModule,
     MatIconModule,
     MatTableModule,
+    MatChipsModule,
+    MatDividerModule,
+    MatTooltipModule,
     DurationFormatPipe
   ],
   templateUrl: './home.component.html',
@@ -31,12 +39,32 @@ export class HomeComponent implements OnInit {
   artists: Artist[] = [];
   albums: Album[] = [];
   recentSongs: Song[] = [];
+  recommendedSongs: Song[] = [];
+  recentlyPlayed: Song[] = [];
+  selectedMood: MusicMood | null = null;
+  moodSongs: Song[] = [];
   loading = true;
 
   songColumns: string[] = ['title', 'artist', 'album', 'duration', 'actions'];
   artistColumns: string[] = ['name', 'genre', 'actions'];
 
-  constructor(private musicService: MusicService) {}
+  // Mood options with icons
+  moods: Array<{ value: MusicMood; label: string; icon: string; color: string }> = [
+    { value: MusicMood.ENERGETIC, label: 'Energetic', icon: 'bolt', color: 'warn' },
+    { value: MusicMood.CHILL, label: 'Chill', icon: 'spa', color: 'primary' },
+    { value: MusicMood.FOCUS, label: 'Focus', icon: 'visibility', color: 'accent' },
+    { value: MusicMood.HAPPY, label: 'Happy', icon: 'sentiment_very_satisfied', color: 'warn' },
+    { value: MusicMood.SAD, label: 'Sad', icon: 'sentiment_dissatisfied', color: 'primary' },
+    { value: MusicMood.WORKOUT, label: 'Workout', icon: 'fitness_center', color: 'accent' },
+    { value: MusicMood.PARTY, label: 'Party', icon: 'celebration', color: 'warn' },
+    { value: MusicMood.ROMANTIC, label: 'Romantic', icon: 'favorite', color: 'accent' }
+  ];
+
+  constructor(
+    private musicService: MusicService,
+    private audioService: AudioService,
+    private aiService: AiRecommendationService
+  ) {}
 
   ngOnInit(): void {
     this.loadData();
@@ -46,7 +74,14 @@ export class HomeComponent implements OnInit {
     this.musicService.getSongs().subscribe({
       next: (songs) => {
         this.songs = songs;
-        this.recentSongs = songs.slice(0, 5);
+        this.recentSongs = songs.slice(0, 8);
+       
+        // Get AI recommendations
+        this.recommendedSongs = this.aiService.getRecommendations(8);
+        
+        // Get recently played
+        this.recentlyPlayed = this.aiService.getRecentlyPlayed(6);
+        
         this.loading = false;
       },
       error: (error) => {
@@ -71,8 +106,17 @@ export class HomeComponent implements OnInit {
   }
 
   playSong(song: Song): void {
-    console.log('Playing song:', song.title);
-    // Music player logic would be implemented here
+    this.audioService.playSong(song);
+    this.aiService.trackSongPlay(song);
+  }
+
+  selectMood(mood: MusicMood): void {
+    this.selectedMood = mood === this.selectedMood ? null : mood;
+    if (this.selectedMood) {
+      this.moodSongs = this.aiService.getSongsByMood(this.selectedMood, 8);
+    } else {
+      this.moodSongs = [];
+    }
   }
 
   viewArtist(artist: Artist): void {

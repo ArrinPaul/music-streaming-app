@@ -3,6 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { BehaviorSubject, Observable, interval } from 'rxjs';
 import { takeWhile } from 'rxjs/operators';
 import { Song, PlaybackState, RepeatMode } from '../models';
+import { AiRecommendationService } from './ai-recommendation.service';
 
 /**
  * Audio playback state interface
@@ -40,7 +41,10 @@ export class AudioService {
 
   public audioState$ = this.audioStateSubject.asObservable();
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private aiService: AiRecommendationService
+  ) {
     if (isPlatformBrowser(this.platformId)) {
       this.audio = new Audio();
       this.initializeAudioListeners();
@@ -116,6 +120,9 @@ export class AudioService {
 
     this.loadSong(song);
     this.play();
+    
+    // Track play with AI recommendation service
+    this.aiService.trackSongPlay(song);
   }
 
   /**

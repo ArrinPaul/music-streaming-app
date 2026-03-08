@@ -1,11 +1,48 @@
 # Music Streaming & Playlist Management Application
 
-A modern, feature-rich music streaming application built with Angular 17 and Angular Material. This application provides a comprehensive music listening experience with playlist management, artist exploration, and personalized recommendations.
+A modern, feature-rich music streaming application built with Angular 17 and Angular Material. This application provides a comprehensive music listening experience with playlist management, artist exploration, and advanced audio controls.
 
 ![Angular Version](https://img.shields.io/badge/Angular-17.3.17-red?logo=angular)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.4.0-blue?logo=typescript)
 ![Angular Material](https://img.shields.io/badge/Material-17.3.10-purple?logo=material-design)
 ![License](https://img.shields.io/badge/license-MIT-green)
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js v18 or higher
+- npm v9 or higher
+
+### Installation & Running
+
+```bash
+# Navigate to the project directory
+cd music-streaming-app
+
+# Install dependencies
+npm install
+
+# Start the development server
+npm start
+
+# Open your browser and navigate to
+http://localhost:4200
+```
+
+The application will automatically reload when you make changes to the source code.
+
+### Build for Production
+
+```bash
+# Create an optimized production build
+npm run build
+
+# The build artifacts will be stored in the `dist/` directory
+```
+
+📝 **Note:** For detailed implementation information, see [IMPLEMENTATION_SUMMARY.md](../IMPLEMENTATION_SUMMARY.md)
 
 ---
 

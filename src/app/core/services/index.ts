@@ -4,3 +4,4 @@
 export * from './music.service';
 export * from './audio.service';
 export * from './user.service';
+export * from './ai-recommendation.service';

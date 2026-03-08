@@ -7,6 +7,59 @@
     </div>
   </div>
 
+  <section class="stats-grid" *ngIf="listeningStats">
+    <mat-card class="stat-card">
+      <mat-icon>schedule</mat-icon>
+      <div>
+        <strong>{{ formatListeningHours(listeningStats.totalListeningTime) }}h</strong>
+        <span>Listening Time</span>
+      </div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <mat-icon>equalizer</mat-icon>
+      <div>
+        <strong>{{ listeningStats.totalSongsPlayed }}</strong>
+        <span>Total Plays</span>
+      </div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <mat-icon>local_fire_department</mat-icon>
+      <div>
+        <strong>{{ listeningStats.favoriteGenre }}</strong>
+        <span>Top Genre</span>
+      </div>
+    </mat-card>
+    <mat-card class="stat-card" *ngIf="listeningStats.topArtists.length > 0">
+      <mat-icon>mic</mat-icon>
+      <div>
+        <strong>{{ listeningStats.topArtists[0].name }}</strong>
+        <span>Most Played Artist</span>
+      </div>
+    </mat-card>
+  </section>
+
+  <section class="section" *ngIf="!loading && trendingSongs.length > 0">
+    <div class="section-header">
+      <div class="title-with-icon">
+        <mat-icon class="section-icon">trending_up</mat-icon>
+        <h2>Trending Now</h2>
+      </div>
+      <p class="section-subtitle">The tracks everyone is looping this week</p>
+    </div>
+    <div class="songs-grid">
+      <mat-card *ngFor="let song of trendingSongs" class="song-card card-hover">
+        <div class="song-card-image-wrapper">
+          <img mat-card-image [src]="song.coverImageUrl" [alt]="song.title" class="song-image">
+          <div class="play-overlay" (click)="playSong(song)"><button mat-fab color="primary"><mat-icon>play_arrow</mat-icon></button></div>
+        </div>
+        <mat-card-content>
+          <h3 class="song-title">{{ song.title }}</h3>
+          <p class="song-artist">{{ song.artistName }}</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </section>
+
   <!-- AI Recommendations Section -->
   <section class="section" *ngIf="!loading && recommendedSongs.length > 0">
     <div class="section-header">
@@ -29,6 +82,31 @@
         </div>
         <mat-card-content>
           <h3 class="song-title" [matTooltip]="song.title">{{ song.title }}</h3>
+          <p class="song-artist">{{ song.artistName }}</p>
+          <p class="song-duration">{{ song.duration | durationFormat }}</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </section>
+
+  <mat-divider></mat-divider>
+
+  <section class="section" *ngIf="!loading && editorPicks.length > 0">
+    <div class="section-header">
+      <div class="title-with-icon">
+        <mat-icon class="section-icon">auto_awesome</mat-icon>
+        <h2>Editor Picks</h2>
+      </div>
+      <p class="section-subtitle">Fresh and timeless selections inspired by Apple Music curation</p>
+    </div>
+    <div class="songs-grid">
+      <mat-card *ngFor="let song of editorPicks" class="song-card card-hover">
+        <div class="song-card-image-wrapper">
+          <img mat-card-image [src]="song.coverImageUrl" [alt]="song.title" class="song-image">
+          <div class="play-overlay" (click)="playSong(song)"><button mat-fab color="primary"><mat-icon>play_arrow</mat-icon></button></div>
+        </div>
+        <mat-card-content>
+          <h3 class="song-title">{{ song.title }}</h3>
           <p class="song-artist">{{ song.artistName }}</p>
           <p class="song-duration">{{ song.duration | durationFormat }}</p>
         </mat-card-content>
@@ -77,8 +155,6 @@
       </mat-card>
     </div>
   </section>
-
-  <mat-divider *ngIf="recentlyPlayed.length > 0"></mat-divider>
 
   <mat-divider *ngIf="recentlyPlayed.length > 0"></mat-divider>
 

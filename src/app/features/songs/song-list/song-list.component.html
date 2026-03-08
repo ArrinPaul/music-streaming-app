@@ -33,6 +33,22 @@
       </mat-select>
       <mat-icon matPrefix>filter_list</mat-icon>
     </mat-form-field>
+
+    <mat-form-field appearance="outline" class="genre-field">
+      <mat-label>Sort</mat-label>
+      <mat-select [(ngModel)]="sortBy" (selectionChange)="onSortChange()">
+        <mat-option value="popular">Most Popular</mat-option>
+        <mat-option value="title">Title</mat-option>
+        <mat-option value="artist">Artist</mat-option>
+        <mat-option value="duration">Duration</mat-option>
+      </mat-select>
+      <mat-icon matPrefix>sort</mat-icon>
+    </mat-form-field>
+
+    <mat-button-toggle-group [value]="viewMode" (change)="setViewMode($event.value)" aria-label="View mode">
+      <mat-button-toggle value="grid"><mat-icon>grid_view</mat-icon></mat-button-toggle>
+      <mat-button-toggle value="list"><mat-icon>view_list</mat-icon></mat-button-toggle>
+    </mat-button-toggle-group>
   </div>
 
   <!-- Results Info -->
@@ -47,7 +63,7 @@
   </div>
 
   <!-- Song List -->
-  <div class="songs-grid" *ngIf="!loading && filteredSongs.length > 0">
+  <div class="songs-grid" *ngIf="!loading && filteredSongs.length > 0 && viewMode === 'grid'">
     <mat-card 
       *ngFor="let song of filteredSongs" 
       class="song-card"
@@ -135,6 +151,21 @@
         </div>
       </mat-card-actions>
     </mat-card>
+  </div>
+
+  <div class="songs-list" *ngIf="!loading && filteredSongs.length > 0 && viewMode === 'list'">
+    <div class="song-row" *ngFor="let song of filteredSongs; index as i" (click)="playSong(song)">
+      <span class="idx">{{ i + 1 }}</span>
+      <img [src]="song.coverImageUrl || 'assets/images/default-album.jpg'" [alt]="song.title">
+      <span class="meta title">{{ song.title }}</span>
+      <span class="meta">{{ song.artistName }}</span>
+      <span class="meta hide-mobile">{{ song.albumName }}</span>
+      <span class="meta hide-mobile">{{ song.genre }}</span>
+      <span class="meta">{{ formatDuration(song.duration) }}</span>
+      <button mat-icon-button (click)="toggleFavorite(song, $event)">
+        <mat-icon>{{ isFavorite(song) ? 'favorite' : 'favorite_border' }}</mat-icon>
+      </button>
+    </div>
   </div>
 
   <!-- Empty State -->

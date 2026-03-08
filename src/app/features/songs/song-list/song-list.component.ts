@@ -12,7 +12,9 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { Subject, takeUntil } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 import { MusicService } from '../../../core/services/music.service';
 import { AudioService } from '../../../core/services/audio.service';
 import { UserService } from '../../../core/services/user.service';
@@ -34,7 +36,8 @@ import { Song, Genre } from '../../../core/models';
     MatMenuModule,
     MatTooltipModule,
     MatSnackBarModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatButtonToggleModule
   ],
   templateUrl: './song-list.component.html',
   styleUrl: './song-list.component.scss'
@@ -47,6 +50,8 @@ export class SongListComponent implements OnInit, OnDestroy {
   
   searchQuery: string = '';
   selectedGenre: string = 'all';
+  sortBy: 'popular' | 'title' | 'artist' | 'duration' = 'popular';
+  viewMode: 'grid' | 'list' = 'grid';
   genres: string[] = ['all', ...Object.values(Genre)];
   
   loading: boolean = true;
@@ -57,10 +62,21 @@ export class SongListComponent implements OnInit, OnDestroy {
     private musicService: MusicService,
     private audioService: AudioService,
     private userService: UserService,
+    private route: ActivatedRoute,
     private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
+    this.route.queryParamMap
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        const query = params.get('q');
+        if (query !== null) {
+          this.searchQuery = query;
+          this.applyFilters();
+        }
+      });
+
     this.loadSongs();
     this.loadFavorites();
     this.subscribeToAudioState();
@@ -135,6 +151,21 @@ export class SongListComponent implements OnInit, OnDestroy {
       result = result.filter(song => song.genre === this.selectedGenre);
     }
 
+    // Apply sorting
+    result.sort((a, b) => {
+      switch (this.sortBy) {
+        case 'title':
+          return a.title.localeCompare(b.title);
+        case 'artist':
+          return a.artistName.localeCompare(b.artistName);
+        case 'duration':
+          return b.duration - a.duration;
+        case 'popular':
+        default:
+          return (b.playCount || 0) - (a.playCount || 0);
+      }
+    });
+
     this.filteredSongs = result;
   }
 
@@ -150,6 +181,14 @@ export class SongListComponent implements OnInit, OnDestroy {
    */
   onGenreChange(): void {
     this.applyFilters();
+  }
+
+  onSortChange(): void {
+    this.applyFilters();
+  }
+
+  setViewMode(mode: 'grid' | 'list'): void {
+    this.viewMode = mode;
   }
 
   /**

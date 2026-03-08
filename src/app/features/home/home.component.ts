@@ -11,7 +11,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { MusicService } from '../../core/services/music.service';
 import { AudioService } from '../../core/services/audio.service';
-import { AiRecommendationService, MusicMood } from '../../core/services/ai-recommendation.service';
+import { AiRecommendationService, ListeningStats, MusicMood } from '../../core/services/ai-recommendation.service';
 import { Song, Artist, Album } from '../../core/models';
 import { DurationFormatPipe } from '../../shared/pipes/duration-format.pipe';
 
@@ -41,6 +41,9 @@ export class HomeComponent implements OnInit {
   recentSongs: Song[] = [];
   recommendedSongs: Song[] = [];
   recentlyPlayed: Song[] = [];
+  trendingSongs: Song[] = [];
+  editorPicks: Song[] = [];
+  listeningStats: ListeningStats | null = null;
   selectedMood: MusicMood | null = null;
   moodSongs: Song[] = [];
   loading = true;
@@ -75,12 +78,15 @@ export class HomeComponent implements OnInit {
       next: (songs) => {
         this.songs = songs;
         this.recentSongs = songs.slice(0, 8);
+        this.trendingSongs = [...songs].sort((a, b) => (b.playCount || 0) - (a.playCount || 0)).slice(0, 8);
+        this.editorPicks = [...songs].sort((a, b) => new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime()).slice(0, 8);
        
         // Get AI recommendations
         this.recommendedSongs = this.aiService.getRecommendations(8);
         
         // Get recently played
         this.recentlyPlayed = this.aiService.getRecentlyPlayed(6);
+        this.listeningStats = this.aiService.getListeningStats();
         
         this.loading = false;
       },
@@ -126,5 +132,9 @@ export class HomeComponent implements OnInit {
   viewAlbum(album: Album): void {
     console.log('Viewing album:', album.title);
     // Navigate to album details
+  }
+
+  formatListeningHours(totalSeconds: number): string {
+    return (totalSeconds / 3600).toFixed(1);
   }
 }

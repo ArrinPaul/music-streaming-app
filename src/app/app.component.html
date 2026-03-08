@@ -3,3 +3,30 @@
 <main class="app-container">
   <router-outlet></router-outlet>
 </main>
+
+<section class="mini-player" *ngIf="audioService.getState().currentSong as song">
+  <div class="mini-player__left">
+    <img [src]="song.coverImageUrl" [alt]="song.title">
+    <div>
+      <strong>{{ song.title }}</strong>
+      <span>{{ song.artistName }}</span>
+    </div>
+  </div>
+
+  <div class="mini-player__controls">
+    <button mat-icon-button (click)="audioService.playPrevious()" aria-label="Previous">
+      <mat-icon>skip_previous</mat-icon>
+    </button>
+    <button mat-mini-fab color="primary" (click)="audioService.togglePlayPause()" aria-label="Play or pause">
+      <mat-icon>{{ isPlaying ? 'pause' : 'play_arrow' }}</mat-icon>
+    </button>
+    <button mat-icon-button (click)="audioService.playNext()" aria-label="Next">
+      <mat-icon>skip_next</mat-icon>
+    </button>
+  </div>
+
+  <a class="mini-player__open" mat-button routerLink="/now-playing">
+    Open Player
+    <mat-icon>open_in_new</mat-icon>
+  </a>
+</section>

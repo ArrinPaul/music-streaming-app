@@ -1,34 +1,55 @@
-<mat-toolbar color="primary" class="navbar">
+<mat-toolbar class="navbar">
   <div class="navbar-container">
-    <div class="navbar-brand">
-      <mat-icon class="logo-icon">music_note</mat-icon>
+    <a class="navbar-brand" routerLink="/home" aria-label="MusicStream home">
+      <mat-icon class="logo-icon">graphic_eq</mat-icon>
       <span class="brand-name">MusicStream</span>
+    </a>
+
+    <div class="search-shell" (focusout)="closeSearchResults()">
+      <mat-form-field appearance="outline" class="global-search">
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearchChange()"
+          (focus)="onSearchFocus()"
+          (keyup.enter)="goToSearchPage()"
+          placeholder="Search songs, artists, albums">
+        <button
+          *ngIf="searchQuery"
+          matSuffix
+          mat-icon-button
+          aria-label="Clear search"
+          (click)="searchQuery=''; onSearchChange()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <div class="search-results" *ngIf="showSearchResults">
+        <button class="result-item" *ngFor="let song of searchResults" (click)="selectSong(song)">
+          <img [src]="song.coverImageUrl" [alt]="song.title">
+          <span class="result-meta">
+            <strong>{{ song.title }}</strong>
+            <small>{{ song.artistName }} • {{ song.albumName }}</small>
+          </span>
+          <mat-icon>play_arrow</mat-icon>
+        </button>
+      </div>
     </div>
 
     <nav class="navbar-menu">
-      <a mat-button routerLink="/home" routerLinkActive="active">
-        <mat-icon>home</mat-icon>
-        Home
-      </a>
-      <a mat-button routerLink="/songs" routerLinkActive="active">
-        <mat-icon>library_music</mat-icon>
-        Songs
-      </a>
-      <a mat-button routerLink="/artists" routerLinkActive="active">
-        <mat-icon>person</mat-icon>
-        Artists
-      </a>
-      <a mat-button routerLink="/playlists" routerLinkActive="active">
-        <mat-icon>playlist_play</mat-icon>
-        Playlists
-      </a>
-      <a mat-button routerLink="/now-playing" routerLinkActive="active">
-        <mat-icon>play_circle</mat-icon>
-        Now Playing
-      </a>
+      <a mat-button routerLink="/home" routerLinkActive="active"><mat-icon>home</mat-icon><span>Home</span></a>
+      <a mat-button routerLink="/songs" routerLinkActive="active"><mat-icon>library_music</mat-icon><span>Browse</span></a>
+      <a mat-button routerLink="/artists" routerLinkActive="active"><mat-icon>podcasts</mat-icon><span>Artists</span></a>
+      <a mat-button routerLink="/playlists" routerLinkActive="active"><mat-icon>queue_music</mat-icon><span>Library</span></a>
+      <a mat-button routerLink="/now-playing" routerLinkActive="active"><mat-icon>play_circle</mat-icon><span>Player</span></a>
     </nav>
 
     <div class="navbar-actions">
+      <button mat-icon-button matTooltip="Quick feedback" routerLink="/feedback">
+        <mat-icon>rate_review</mat-icon>
+      </button>
+
       <button mat-icon-button (click)="toggleTheme()" matTooltip="Toggle theme">
         <mat-icon>{{ currentTheme === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
       </button>
@@ -45,22 +66,9 @@
           </div>
         </div>
         <mat-divider></mat-divider>
-        <button mat-menu-item routerLink="/login">
-          <mat-icon>login</mat-icon>
-          Sign In
-        </button>
-        <button mat-menu-item routerLink="/feedback">
-          <mat-icon>feedback</mat-icon>
-          Give Feedback
-        </button>
-        <button mat-menu-item>
-          <mat-icon>settings</mat-icon>
-          Settings
-        </button>
-        <button mat-menu-item>
-          <mat-icon>help</mat-icon>
-          Help
-        </button>
+        <button mat-menu-item routerLink="/login"><mat-icon>login</mat-icon>Sign In</button>
+        <button mat-menu-item routerLink="/feedback"><mat-icon>feedback</mat-icon>Give Feedback</button>
+        <button mat-menu-item><mat-icon>settings</mat-icon>Settings</button>
       </mat-menu>
     </div>
   </div>

@@ -107,6 +107,13 @@ export class AudioService {
   }
 
   /**
+   * Expose audio element for advanced visual features (e.g., visualizer)
+   */
+  getAudioElement(): HTMLAudioElement | null {
+    return this.audio;
+  }
+
+  /**
    * Load and play a song
    */
   playSong(song: Song, playlist?: Song[]): void {

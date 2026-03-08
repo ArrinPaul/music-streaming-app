@@ -590,13 +590,42 @@ ng test --browsers=ChromeHeadless --watch=false
 - Aim for 80%+ code coverage
 - Run tests before committing code
 
+### QA Checklist (2026-03-09)
+
+The following checklist was executed after layout, padding, navigation, and now-playing visualizer updates.
+
+| Scenario | Command / Flow | Result | Notes |
+|---|---|---|---|
+| Build validation | `ng build --configuration development` | PASS | Build and prerender completed successfully |
+| Local run | `ng serve --host localhost --port 4200` | PASS | App serves at `http://localhost:4200/` |
+| Global layout spacing | Manual UI check across Home, Songs, Player | PASS | Consistent container width/padding and fixed mini-player spacing |
+| Navbar search + autocomplete | Manual UI check (`search-shell`, result dropdown, play from search) | PASS | Search results appear and selecting a result starts playback |
+| Recently played + mood filtering | Manual UI check on Home | PASS | Mood chips filter songs and recently played renders |
+| Listening statistics cards | Manual UI check on Home | PASS | Stats cards show listening time, plays, and favorite genre/artist |
+| Real audio visualizer | Manual UI check on Now Playing | PASS | Canvas visualizer reacts to active audio via Web Audio analyser |
+| Unit tests (headless) | `ng test --watch=false --browsers=ChromeHeadless` | FAIL | Existing test setup issues: missing `HttpClient` providers and animation module in specs |
+
+#### Follow-up needed for unit tests
+- Add `provideHttpClientTesting()` or `HttpClientTestingModule` in affected specs.
+- Add `provideNoopAnimations()` or `NoopAnimationsModule` for Material animation-based components.
+- Update `AppComponent`/feature specs to include providers for newly injected services.
+
+### Tested User Scenarios
+
+1. Start app and browse to Home, Songs, Artists, Playlists, Now Playing.
+2. Search from navbar and play a song directly from autocomplete results.
+3. Use Songs page filters, sorting, and grid/list view toggles.
+4. Open Now Playing, verify play/pause/seek/volume/repeat/shuffle controls.
+5. Confirm visualizer bars animate while audio is playing.
+6. Confirm mini-player remains fixed and usable while navigating routes.
+
 ---
 
 ## Future Enhancements
 
 ### Planned Features
 - [ ] Real backend API integration
-- [ ] Audio visualization and equalizer
+- [x] Audio visualization and equalizer (Now Playing canvas visualizer)
 - [ ] Social sharing of playlists
 - [ ] Collaborative playlists
 - [ ] Lyrics display and synchronized highlighting

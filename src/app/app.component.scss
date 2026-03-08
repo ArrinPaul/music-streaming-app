@@ -1,11 +1,13 @@
 .app-container {
   min-height: calc(100vh - 64px);
-  padding: 24px;
-  padding-bottom: 110px;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  width: 100%;
+  padding: 18px var(--padding-desktop) 110px;
   background-color: var(--background-color);
   
   @media (max-width: 600px) {
-    padding: 16px;
+    padding: 10px var(--padding-mobile) 100px;
   }
 }
 

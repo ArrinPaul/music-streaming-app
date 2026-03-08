@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Inject, NgZone, OnDestroy, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -26,7 +27,9 @@ import { Song, PlaybackState, RepeatMode } from '../../../core/models';
   templateUrl: './song-player.component.html',
   styleUrl: './song-player.component.scss'
 })
-export class SongPlayerComponent implements OnInit, OnDestroy {
+export class SongPlayerComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('visualizerCanvas') visualizerCanvas?: ElementRef<HTMLCanvasElement>;
+
   audioState: AudioState | null = null;
   currentSong: Song | null = null;
   isFavorite: boolean = false;
@@ -39,20 +42,39 @@ export class SongPlayerComponent implements OnInit, OnDestroy {
   // Volume
   volume: number = 80;
   isMuted: boolean = false;
+
+  private audioContext: AudioContext | null = null;
+  private analyser: AnalyserNode | null = null;
+  private mediaSource: MediaElementAudioSourceNode | null = null;
+  private animationFrameId: number | null = null;
+  private readonly isBrowser: boolean;
   
   private destroy$ = new Subject<void>();
 
   constructor(
     private audioService: AudioService,
-    private userService: UserService
-  ) {}
+    private userService: UserService,
+    private ngZone: NgZone,
+    @Inject(PLATFORM_ID) platformId: object
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   ngOnInit(): void {
     this.subscribeToAudioState();
     this.loadUserPreferences();
   }
 
+  ngAfterViewInit(): void {
+    this.tryInitializeVisualizer();
+  }
+
   ngOnDestroy(): void {
+    this.stopVisualizerLoop();
+    if (this.audioContext) {
+      void this.audioContext.close();
+      this.audioContext = null;
+    }
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -78,7 +100,103 @@ export class SongPlayerComponent implements OnInit, OnDestroy {
         if (this.currentSong) {
           this.isFavorite = this.userService.isFavorite(this.currentSong.id);
         }
+
+        if (state.playbackState === PlaybackState.PLAYING) {
+          this.tryInitializeVisualizer();
+        }
       });
+  }
+
+  private tryInitializeVisualizer(): void {
+    if (!this.isBrowser || !this.visualizerCanvas) {
+      return;
+    }
+
+    const audio = this.audioService.getAudioElement();
+    if (!audio) {
+      return;
+    }
+
+    if (!this.audioContext) {
+      this.audioContext = new AudioContext();
+      this.analyser = this.audioContext.createAnalyser();
+      this.analyser.fftSize = 256;
+      this.analyser.smoothingTimeConstant = 0.84;
+
+      this.mediaSource = this.audioContext.createMediaElementSource(audio);
+      this.mediaSource.connect(this.analyser);
+      this.analyser.connect(this.audioContext.destination);
+    }
+
+    if (this.audioContext.state === 'suspended') {
+      void this.audioContext.resume();
+    }
+
+    if (this.animationFrameId === null) {
+      this.startVisualizerLoop();
+    }
+  }
+
+  private startVisualizerLoop(): void {
+    const canvas = this.visualizerCanvas?.nativeElement;
+    const analyser = this.analyser;
+    if (!canvas || !analyser) {
+      return;
+    }
+
+    const context = canvas.getContext('2d');
+    if (!context) {
+      return;
+    }
+
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    const draw = () => {
+      const width = canvas.clientWidth || 560;
+      const height = canvas.clientHeight || 72;
+
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width;
+        canvas.height = height;
+      }
+
+      analyser.getByteFrequencyData(dataArray);
+
+      context.clearRect(0, 0, width, height);
+      context.fillStyle = 'rgba(255,255,255,0.05)';
+      context.fillRect(0, 0, width, height);
+
+      const barCount = 56;
+      const step = Math.max(1, Math.floor(bufferLength / barCount));
+      const barWidth = width / barCount;
+
+      for (let i = 0; i < barCount; i++) {
+        const value = dataArray[i * step] || 0;
+        const magnitude = (value / 255) * height;
+        const x = i * barWidth;
+        const y = height - magnitude;
+
+        const gradient = context.createLinearGradient(0, y, 0, height);
+        gradient.addColorStop(0, '#22c1ff');
+        gradient.addColorStop(1, '#5c67ff');
+        context.fillStyle = gradient;
+        context.fillRect(x + 1, y, Math.max(2, barWidth - 2), magnitude);
+      }
+
+      this.animationFrameId = requestAnimationFrame(draw);
+    };
+
+    this.ngZone.runOutsideAngular(() => {
+      this.animationFrameId = requestAnimationFrame(draw);
+    });
+  }
+
+  private stopVisualizerLoop(): void {
+    if (this.animationFrameId !== null && this.isBrowser) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = null;
+    }
   }
 
   loadUserPreferences(): void {

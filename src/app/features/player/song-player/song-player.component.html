@@ -58,6 +58,11 @@
           <span class="time-duration">{{ durationFormatted }}</span>
         </div>
 
+        <div class="visualizer-section" *ngIf="currentSong">
+          <span>Live Visualizer</span>
+          <canvas #visualizerCanvas class="visualizer-canvas" aria-label="Audio visualizer"></canvas>
+        </div>
+
         <!-- Main Controls -->
         <div class="main-controls">
           <button 

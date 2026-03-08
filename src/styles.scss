@@ -377,28 +377,6 @@ a {
     color: black;
   }
 }
-
-  --divider-color: var(--slate-700);
-  --hover-bg: var(--slate-700);
-  --accent-color: var(--primary-400);
-  --accent-color-light: rgba(99, 102, 241, 0.1);
-}
-
-/* ===== GLOBAL STYLES ===== */
-html, body { 
-  height: 100%; 
-  margin: 0;
-  padding: 0;
-}
-
-body { 
-  font-family: var(--font-body);
-  font-size: 16px;
-  line-height: var(--line-height);
-  color: var(--text-primary);
-  background-color: var(--background-color);
-  transition: background-color var(--transition-medium) var(--transition-cubic);
-  -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 

@@ -29,7 +29,7 @@
         </div>
         <mat-card-content>
           <h3 class="song-title" [matTooltip]="song.title">{{ song.title }}</h3>
-          <p class="song-artist">{{ song.artist }}</p>
+          <p class="song-artist">{{ song.artistName }}</p>
           <p class="song-duration">{{ song.duration | durationFormat }}</p>
         </mat-card-content>
       </mat-card>
@@ -71,12 +71,14 @@
         </div>
         <mat-card-content>
           <h3 class="song-title" [matTooltip]="song.title">{{ song.title }}</h3>
-          <p class="song-artist">{{ song.artist }}</p>
+          <p class="song-artist">{{ song.artistName }}</p>
           <p class="song-duration">{{ song.duration | durationFormat }}</p>
         </mat-card-content>
       </mat-card>
     </div>
   </section>
+
+  <mat-divider *ngIf="recentlyPlayed.length > 0"></mat-divider>
 
   <mat-divider *ngIf="recentlyPlayed.length > 0"></mat-divider>
 
@@ -102,7 +104,7 @@
         </div>
         <mat-card-content>
           <h3 class="song-title" [matTooltip]="song.title">{{ song.title }}</h3>
-          <p class="song-artist">{{ song.artist }}</p>
+          <p class="song-artist">{{ song.artistName }}</p>
           <p class="song-duration">{{ song.duration | durationFormat }}</p>
         </mat-card-content>
       </mat-card>
@@ -140,7 +142,7 @@
             </div>
             <mat-card-content>
               <h3 class="song-title" [matTooltip]="song.title">{{ song.title }}</h3>
-              <p class="song-artist">{{ song.artist }}</p>
+              <p class="song-artist">{{ song.artistName }}</p>
               <p class="song-duration">{{ song.duration | durationFormat }}</p>
             </mat-card-content>
           </mat-card>

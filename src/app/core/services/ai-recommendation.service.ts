@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Observable, map, of } from 'rxjs';
 import { Song, Genre } from '../models';
 import { MusicService } from './music.service';
 import { UserService } from './user.service';
@@ -17,7 +16,7 @@ export interface RecommendationScore {
  * Listening statistics interface
  */
 export interface ListeningStats {
-  totalListeningTime: number;
+  total ListeningTime: number;
   totalSongsPlayed: number;
   favoriteGenre: Genre | string;
   topArtists: { name: string; playCount: number }[];
@@ -44,19 +43,20 @@ export enum MusicMood {
 })
 export class AiRecommendationService {
   private recentlyPlayed: Song[] = [];
-  private listeningHistory: Map<string, number> = new Map(); // songId -> play count
+  private listeningHistory: Map<string, number> = new Map(); // songId -> playCount
+  private allSongs: Song[] = [];
   private readonly MAX_RECENT = 20;
 
   // Mood to genre mapping
-  private moodGenreMap: Record<MusicMood, string[]> = {
-    [MusicMood.ENERGETIC]: ['Rock', 'Hip Hop', 'Electronic', 'Alternative'],
-    [MusicMood.CHILL]: ['Jazz', 'Indie', 'R&B'],
-    [MusicMood.FOCUS]: ['Classical', 'Jazz', 'Indie'],
-    [MusicMood.HAPPY]: ['Pop', 'R&B', 'Electronic'],
-    [MusicMood.SAD]: ['Indie', 'Pop', 'Alternative'],
-    [MusicMood.WORKOUT]: ['Hip Hop', 'Electronic', 'Rock'],
-    [MusicMood.PARTY]: ['Pop', 'Electronic', 'Hip Hop'],
-    [MusicMood.ROMANTIC]: ['R&B', 'Pop', 'Jazz']
+  private moodGenreMap: Record<MusicMood, Genre[]> = {
+    [MusicMood.ENERGETIC]: [Genre.ROCK, Genre.HIP_HOP, Genre.ELECTRONIC, Genre.ALTERNATIVE],
+    [MusicMood.CHILL]: [Genre.JAZZ, Genre.INDIE, Genre.RNB],
+    [MusicMood.FOCUS]: [Genre.CLASSICAL, Genre.JAZZ, Genre.INDIE],
+    [MusicMood.HAPPY]: [Genre.POP, Genre.RNB, Genre.ELECTRONIC],
+    [MusicMood.SAD]: [Genre.INDIE, Genre.POP, Genre.ALTERNATIVE],
+    [MusicMood.WORKOUT]: [Genre.HIP_HOP, Genre.ELECTRONIC, Genre.ROCK],
+    [MusicMood.PARTY]: [Genre.POP, Genre.ELECTRONIC, Genre.HIP_HOP],
+    [MusicMood.ROMANTIC]: [Genre.RNB, Genre.POP, Genre.JAZZ]
   };
 
   constructor(
@@ -64,9 +64,21 @@ export class AiRecommendationService {
     private userService: UserService
   ) {
     this.loadListeningHistory();
+    this.loadSongs();
   }
 
   /**
+   * Load all songs into memory
+   */
+  private loadSongs(): void {
+    this.musicService.getSongs().subscribe(songs => {
+      this.allSongs = songs;
+    });
+  }
+
+  /
+
+**
    * Load listening history from localStorage
    */
   private loadListeningHistory(): void {
@@ -120,68 +132,77 @@ export class AiRecommendationService {
   }
 
   /**
-   * Get AI-powered song recommendations based on listening history
+   * Get AI-powered song recommendations
    */
-  getRecommendations(limit: number = 10): Observable<RecommendationScore[]> {
-    return this.musicService.getSongs().pipe(
-      map(songs => {
-        const recommendations: RecommendationScore[] = [];
-        const favorites = this.userService.getFavorites();
-        
-        songs.forEach(song => {
-          const score = this.calculateRecommendationScore(song, songs, favorites);
-          if (score.score > 0) {
-            recommendations.push(score);
-          }
-        });
+  getRecommendations(limit: number = 10): Song[] {
+    if (this.allSongs.length === 0) {
+      return [];
+    }
 
-        // Sort by score descending
-        recommendations.sort((a, b) => b.score - a.score);
-        
-        return recommendations.slice(0, limit);
-      })
-    );
+    const favorites = this.userService.getFavorites();
+    
+    // Calculate scores for each song
+    const scoredSongs = this.allSongs.map(song => {
+      const score = this.calculateRecommendationScore(song, favorites);
+      return { song, ...score };
+    });
+
+    // Sort by score and return top results
+    return scoredSongs
+      .sort((a, b) => b.score - a.score)
+      .slice(0, limit)
+      .map(scored => scored.song);
   }
 
   /**
-   * Calculate recommendation score for a song using AI-like algorithms
+   * Calculate recommendation score for a song
    */
   private calculateRecommendationScore(
     song: Song,
-    allSongs: Song[],
-    favorites: string[]
-  ): RecommendationScore {
+    favorites: Song[]
+  ): { score: number; reasons: string[] } {
     let score = 0;
     const reasons: string[] = [];
 
     // Base score for popularity
-    if (song.playCount && song.playCount > 1000000000) {
-      score += 10;
-      reasons.push('Popular song');
+    if (song.playCount && song.playCount > 0) {
+      score += Math.min(song.playCount, 100) / 10;
+      reasons.push('Popular track');
     }
 
     // Boost if from favorite artist
-    const favoriteSongs = allSongs.filter(s => favorites.includes(s.id));
-    const favoriteArtists = new Set(favoriteSongs.map(s => s.artistId));
-    if (favoriteArtists.has(song.artistId)) {
+    const favoriteArtistIds = favorites
+      .map(fav => fav.artistId)
+      .filter((id, index, self) => self.indexOf(id) === index);
+    if (favoriteArtistIds.includes(song.artistId)) {
       score += 30;
-      reasons.push
-
-(`From an artist you love`);
+      reasons.push('Favorite artist');
     }
 
     // Boost if same genre as favorites
-    const favoriteGenres = favoriteSongs.map(s => s.genre);
+    const favoriteGenres = favorites.map(s => s.genre);
     if (favoriteGenres.includes(song.genre)) {
       score += 20;
-      reasons.push(`Matches your taste: ${song.genre}`);
+      reasons.push(`Preferred genre: ${song.genre}`);
     }
 
-    // Boost if in listening history
+    // Boost based on listening history
     const playCount = this.listeningHistory.get(song.id) || 0;
     if (playCount > 0) {
       score += Math.min(playCount * 5, 25);
-      reasons.push(`You've played this ${playCount} time${playCount > 1 ? 's' : ''}`);
+      reasons.push(`Played ${playCount} times`);
+    }
+
+    // Boost if in favorites
+    if (favorites.some(fav => fav.id === song.id)) {
+      score += 25;
+      reasons.push('In your favorites');
+    }
+
+    // Boost for discovery (not played much)
+    if (playCount === 0 && !favorites.some(fav => fav.id === song.id)) {
+      score += 15;
+      reasons.push('Discover new music');
     }
 
     // Boost if similar to recently played
@@ -189,191 +210,119 @@ export class AiRecommendationService {
       const recentGenres = new Set(this.recentlyPlayed.slice(0, 5).map(s => s.genre));
       if (recentGenres.has(song.genre)) {
         score += 15;
-        reasons.push('Similar to what you\'ve been listening to');
+        reasons.push('Similar to your recent  listening');
       }
     }
 
-    // Boost if already favorited
-    if (favorites.includes(song.id)) {
-      score += 25;
-      reasons.push('One of your favorites');
-    }
-
-    // Random discovery bonus for new songs
-    if (!this.listeningHistory.has(song.id) && Math.random() > 0.95) {
-      score += 15;
-      reasons.push('Discover something new');
-    }
-
-    // Boost newer songs slightly
-    const releaseYear = new Date(song.releaseDate).getFullYear();
-    if (releaseYear >= 2015) {
-      score += 5;
-    }
-
-    return { song, score, reasons };
+    return { score, reasons };
   }
 
   /**
    * Get songs by mood
    */
-  getSongsByMood(mood: MusicMood): Observable<Song[]> {
-    const genres = this.moodGenreMap[mood];
+  getSongsByMood(mood: MusicMood, limit: number = 20): Song[] {
+    const genres = this.moodGenreMap[mood] || [];
+    const filtered = this.allSongs.filter(song => genres.includes(song.genre));
     
-    return this.musicService.getSongs().pipe(
-      map(songs => {
-        return songs
-          .filter(song => genres.includes(song.genre))
-          .sort(() => Math.random() - 0.5) // Shuffle
-          .slice(0, 20);
-      })
-    );
-  }
-
-  /**
-   * Get listening statistics
-   */
-  getListeningStats(): Observable<ListeningStats> {
-    return this.musicService.getSongs().pipe(
-      map(songs => {
-        // Calculate total listening time
-        const totalListeningTime = Array.from(this.listeningHistory.entries())
-          .reduce((total, [songId, count]) => {
-            const song = songs.find(s => s.id === songId);
-            return total + (song ? song.duration * count : 0);
-          }, 0);
-
-        // Total songs played
-        const totalSongsPlayed = Array.from(this.listeningHistory.values())
-          .reduce((a, b) => a + b, 0);
-
-        // Favorite genre
-        const genreCounts: Record<string, number> = {};
-        songs.forEach(song => {
-          const playCount = this.listeningHistory.get(song.id) || 0;
-          if (playCount > 0) {
-            genreCounts[song.genre] = (genreCounts[song.genre] || 0) + playCount;
-          }
-        });
-        const favoriteGenre = Object.entries(genreCounts)
-          .sort((a, b) => b[1] - a[1])[0]?.[0] || 'Pop';
-
-        // Top artists
-        const artistCounts: Record<string, number> = {};
-        songs.forEach(song => {
-          const playCount = this.listeningHistory.get(song.id) || 0;
-          if (playCount > 0) {
-            artistCounts[song.artistName] = (artistCounts[song.artistName] || 0) + playCount;
-          }
-        });
-        const topArtists = Object.entries(artistCounts)
-          .map(([name, playCount]) => ({ name, playCount }))
-          .sort((a, b) => b.playCount - a.playCount)
-          .slice(0, 5);
-
-        // Most played songs
-        const mostPlayedSongs = Array.from(this.listeningHistory.entries())
-          .map(([songId, count]) => ({
-            song: songs.find(s => s.id === songId)!,
-            count
-          }))
-          .filter(item => item.song)
-          .sort((a, b) => b.count - a.count)
-          .slice(0, 10)
-          .map(item => item.song);
-
-        return {
-          totalListeningTime,
-          totalSongsPlayed,
-          favoriteGenre,
-          topArtists,
-          recentlyPlayed: [...this.recentlyPlayed],
-          mostPlayedSongs
-        };
-      })
-    );
+    // Shuffle and limit
+    return filtered
+      .sort(() => Math.random() - 0.5)
+      .slice(0, limit);
   }
 
   /**
    * Get recently played songs
    */
-  getRecentlyPlayed(): Song[] {
-    return [...this.recentlyPlayed];
+  getRecentlyPlayed(limit: number = 10): Song[] {
+    return this.recentlyPlayed.slice(0, limit);
   }
 
   /**
-   * Clear listening history
+   * Get listening statistics
    */
-  clearHistory(): void {
-    this.recentlyPlayed = [];
-    this.listeningHistory.clear();
-    this.saveListeningHistory();
-  }
-
-  /**
-   * Get similar songs based on a given song
-   */
-  getSimilarSongs(song: Song, limit: number = 5): Observable<Song[]> {
-    return this.musicService.getSongs().pipe(
-      map(songs => {
-        return songs
-          .filter(s => s.id !== song.id) // Exclude the current song
-          .map(s => ({
-            song: s,
-            similarity: this.calculateSimilarity(song, s)
-          }))
-          .sort((a, b) => b.similarity - a.similarity)
-          .slice(0, limit)
-          .map(item => item.song);
-      })
-    );
-  }
-
-  /**
-   * Calculate similarity score between two songs
-   */
-  private calculateSimilarity(song1: Song, song2: Song): number {
-    let score = 0;
-
-    // Same genre (+40 points)
-    if (song1.genre === song2.genre) {
-      score += 40;
+  getListeningStats(): ListeningStats {
+    if (this.allSongs.length === 0) {
+      return {
+        totalListeningTime: 0,
+        totalSongsPlayed: 0,
+        favoriteGenre: Genre.POP,
+        topArtists: [],
+        recentlyPlayed: [],
+        mostPlayedSongs: []
+      };
     }
 
-    // Same artist (+50 points)
-    if (song1.artistId === song2.artistId) {
-      score += 50;
-    }
+    // Calculate total listening time
+    const totalListeningTime = Array.from(this.listeningHistory.entries())
+      .reduce((total, [songId, count]) => {
+        const song = this.allSongs.find(s => s.id === songId);
+        return total + (song ? song.duration * count : 0);
+      }, 0);
 
-    // Similar duration (+10 points if within 30 seconds)
-    if (Math.abs(song1.duration - song2.duration) < 30) {
-      score += 10;
-    }
+    // Total songs played
+    const totalSongsPlayed = Array.from(this.listeningHistory.values())
+      .reduce((a, b) => a + b, 0);
 
-    return score;
-  }
+    // Favorite genre
+    const genreCounts: Record<string, number> = {};
+    this.allSongs.forEach(song => {
+      const playCount = this.listeningHistory.get(song.id) || 0;
+      if (playCount > 0) {
+        genreCounts[song.genre] = (genreCounts[song.genre] || 0) + playCount;
+      }
+    });
+    const favoriteGenre = Object.entries(genreCounts)
+      .sort((a, b) => b[1] - a[1])[0]?.[0] as Genre || Genre.POP;
 
-  /**
-   * Get all available moods
-   */
-  getAllMoods(): MusicMood[] {
-    return Object.values(MusicMood);
-  }
+    // Top artists
+    const artistCounts: Record<string, number> = {};
+    this.allSongs.forEach(song => {
+      const playCount = this.listeningHistory.get(song.id) || 0;
+      if (playCount > 0) {
+        artistCounts[song.artistName] = (artistCounts[song.artistName] || 0) + playCount;
+      }
+    });
+    const topArtists = Object.entries(artistCounts)
+      .map(([name, playCount]) => ({ name, playCount }))
+      .sort((a, b) => b.playCount - a.playCount)
+      .slice(0, 5);
 
-  /**
-   * Get mood icon (for UI display)
-   */
-  getMoodIcon(mood: MusicMood): string {
-    const iconMap: Record<MusicMood, string> = {
-      [MusicMood.ENERGETIC]: 'bolt',
-      [MusicMood.CHILL]: 'self_improvement',
-      [MusicMood.FOCUS]: 'psychology',
-      [MusicMood.HAPPY]: 'sentiment_satisfied',
-      [MusicMood.SAD]: 'sentiment_dissatisfied',
-      [MusicMood.WORKOUT]: 'fitness_center',
-      [MusicMood.PARTY]: 'celebration',
-      [MusicMood.ROMANTIC]: 'favorite'
+    // Most played songs
+    const mostPlayedSongs = Array.from(this.listeningHistory.entries())
+      .map(([songId, count]) => ({
+        song: this.allSongs.find(s => s.id === song Id)!,
+        count
+      }))
+      .filter(item => item.song)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10)
+      .map(item => item.song);
+
+    return {
+      totalListeningTime,
+      totalSongsPlayed,
+      favoriteGenre,
+      topArtists,
+      recentlyPlayed: [...this.recentlyPlayed],
+      mostPlayedSongs
     };
-    return iconMap[mood];
+  }
+
+  /**
+   * Get similar songs based on genre and artist
+   */
+  getSimilarSongs(song: Song, limit: number = 10): Song[] {
+    return this.allSongs
+      .filter(s => s.id !== song.id)
+      .map(s => {
+        let similarityScore = 0;
+        if (s.genre === song.genre) similarityScore += 40;
+        if (s.artistId === song.artistId) similarityScore += 50;
+        if (Math.abs(s.duration - song.duration) < 30) similarityScore += 10;
+        return { song: s, similarityScore };
+      })
+      .sort((a, b) => b.similarityScore - a.similarityScore)
+      .slice(0, limit)
+      .map(item => item.song);
   }
 }

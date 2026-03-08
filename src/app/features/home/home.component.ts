@@ -107,7 +107,6 @@ export class HomeComponent implements OnInit {
 
   playSong(song: Song): void {
     this.audioService.playSong(song);
-    this.aiService.trackSongPlay(song);
   }
 
   selectMood(mood: MusicMood): void {

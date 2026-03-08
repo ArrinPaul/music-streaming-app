@@ -16,7 +16,7 @@ export interface RecommendationScore {
  * Listening statistics interface
  */
 export interface ListeningStats {
-  total ListeningTime: number;
+  totalListeningTime: number;
   totalSongsPlayed: number;
   favoriteGenre: Genre | string;
   topArtists: { name: string; playCount: number }[];
@@ -49,13 +49,13 @@ export class AiRecommendationService {
 
   // Mood to genre mapping
   private moodGenreMap: Record<MusicMood, Genre[]> = {
-    [MusicMood.ENERGETIC]: [Genre.ROCK, Genre.HIP_HOP, Genre.ELECTRONIC, Genre.ALTERNATIVE],
+    [MusicMood.ENERGETIC]: [Genre.ROCK, Genre.HIPHOP, Genre.ELECTRONIC, Genre.ALTERNATIVE],
     [MusicMood.CHILL]: [Genre.JAZZ, Genre.INDIE, Genre.RNB],
     [MusicMood.FOCUS]: [Genre.CLASSICAL, Genre.JAZZ, Genre.INDIE],
     [MusicMood.HAPPY]: [Genre.POP, Genre.RNB, Genre.ELECTRONIC],
     [MusicMood.SAD]: [Genre.INDIE, Genre.POP, Genre.ALTERNATIVE],
-    [MusicMood.WORKOUT]: [Genre.HIP_HOP, Genre.ELECTRONIC, Genre.ROCK],
-    [MusicMood.PARTY]: [Genre.POP, Genre.ELECTRONIC, Genre.HIP_HOP],
+    [MusicMood.WORKOUT]: [Genre.HIPHOP, Genre.ELECTRONIC, Genre.ROCK],
+    [MusicMood.PARTY]: [Genre.POP, Genre.ELECTRONIC, Genre.HIPHOP],
     [MusicMood.ROMANTIC]: [Genre.RNB, Genre.POP, Genre.JAZZ]
   };
 
@@ -76,9 +76,7 @@ export class AiRecommendationService {
     });
   }
 
-  /
-
-**
+  /**
    * Load listening history from localStorage
    */
   private loadListeningHistory(): void {
@@ -139,11 +137,12 @@ export class AiRecommendationService {
       return [];
     }
 
-    const favorites = this.userService.getFavorites();
+    const favoriteIds = this.userService.getFavorites();
+    const favoriteSongs = this.allSongs.filter(s => favoriteIds.includes(s.id));
     
     // Calculate scores for each song
     const scoredSongs = this.allSongs.map(song => {
-      const score = this.calculateRecommendationScore(song, favorites);
+      const score = this.calculateRecommendationScore(song, favoriteSongs, favoriteIds);
       return { song, ...score };
     });
 
@@ -159,7 +158,8 @@ export class AiRecommendationService {
    */
   private calculateRecommendationScore(
     song: Song,
-    favorites: Song[]
+    favoriteSongs: Song[],
+    favoriteIds: string[]
   ): { score: number; reasons: string[] } {
     let score = 0;
     const reasons: string[] = [];
@@ -171,7 +171,7 @@ export class AiRecommendationService {
     }
 
     // Boost if from favorite artist
-    const favoriteArtistIds = favorites
+    const favoriteArtistIds = favoriteSongs
       .map(fav => fav.artistId)
       .filter((id, index, self) => self.indexOf(id) === index);
     if (favoriteArtistIds.includes(song.artistId)) {
@@ -180,7 +180,7 @@ export class AiRecommendationService {
     }
 
     // Boost if same genre as favorites
-    const favoriteGenres = favorites.map(s => s.genre);
+    const favoriteGenres = favoriteSongs.map(s => s.genre);
     if (favoriteGenres.includes(song.genre)) {
       score += 20;
       reasons.push(`Preferred genre: ${song.genre}`);
@@ -194,13 +194,13 @@ export class AiRecommendationService {
     }
 
     // Boost if in favorites
-    if (favorites.some(fav => fav.id === song.id)) {
+    if (favoriteIds.includes(song.id)) {
       score += 25;
       reasons.push('In your favorites');
     }
 
     // Boost for discovery (not played much)
-    if (playCount === 0 && !favorites.some(fav => fav.id === song.id)) {
+    if (playCount === 0 && !favoriteIds.includes(song.id)) {
       score += 15;
       reasons.push('Discover new music');
     }
@@ -290,7 +290,7 @@ export class AiRecommendationService {
     // Most played songs
     const mostPlayedSongs = Array.from(this.listeningHistory.entries())
       .map(([songId, count]) => ({
-        song: this.allSongs.find(s => s.id === song Id)!,
+        song: this.allSongs.find(s => s.id === songId)!,
         count
       }))
       .filter(item => item.song)

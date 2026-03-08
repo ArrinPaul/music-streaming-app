@@ -1,5 +1,5 @@
 .home-container {
-  padding: 1.5rem;
+  padding: clamp(1rem, 2vw, 1.6rem);
   max-width: var(--container-max);
   margin: 0 auto;
 }
@@ -32,8 +32,8 @@
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(180px, 1fr));
-  gap: 12px;
-  margin-bottom: 1.75rem;
+  gap: 0.85rem;
+  margin-bottom: 2rem;
 
   .stat-card {
     padding: 0.9rem 1rem;
@@ -61,11 +61,13 @@
 }
 
 .section {
-  margin-bottom: 2rem;
+  margin-bottom: 2.4rem;
 }
 
 .section-header {
-  margin-bottom: 1rem;
+  margin-bottom: 1.1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--divider-color);
 
   .title-with-icon {
     display: flex;
@@ -90,7 +92,7 @@
 
 .songs-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(178px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1rem;
 }
 
@@ -187,6 +189,7 @@
 }
 
 .content-tabs {
+  margin-top: 1.25rem;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -197,7 +200,7 @@
 }
 
 .tab-content {
-  padding: 1.25rem;
+  padding: 1.35rem;
 
   .header-actions {
     display: flex;
@@ -216,7 +219,7 @@
 .artists-grid,
 .albums-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
 }
 
@@ -280,6 +283,15 @@
   .stats-grid {
     grid-template-columns: repeat(2, minmax(160px, 1fr));
   }
+
+  .songs-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .artists-grid,
+  .albums-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 700px) {
@@ -292,6 +304,22 @@
   }
 
   .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .songs-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.8rem;
+  }
+
+  .artists-grid,
+  .albums-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .songs-grid {
     grid-template-columns: 1fr;
   }
 }

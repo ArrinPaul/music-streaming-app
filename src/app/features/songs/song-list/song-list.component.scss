@@ -1,10 +1,10 @@
 .song-list-container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 24px;
+  padding: clamp(1rem, 2vw, 1.75rem);
 
   .header {
-    margin-bottom: 32px;
+    margin-bottom: 1.25rem;
 
     h1 {
       font-size: 2.5rem;
@@ -21,19 +21,55 @@
   }
 
   .filters-section {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: minmax(260px, 2fr) repeat(2, minmax(180px, 1fr)) auto;
+    gap: 0.85rem;
+    margin-bottom: 1rem;
     align-items: center;
 
     .search-field {
-      flex: 1;
-      min-width: 300px;
+      min-width: 0;
     }
 
     .genre-field {
-      min-width: 200px;
+      min-width: 0;
+    }
+
+    mat-button-toggle-group {
+      justify-self: end;
+    }
+  }
+
+  .quick-genres {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.1rem 1rem;
+    border-bottom: 1px solid var(--divider-color);
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+
+    .quick-genres-label {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    mat-chip-set {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    mat-chip {
+      cursor: pointer;
+      transition: transform var(--transition-fast);
+
+      &:hover {
+        transform: translateY(-1px);
+      }
     }
   }
 
@@ -44,9 +80,10 @@
   }
 
   .results-info {
-    margin-bottom: 16px;
+    margin-bottom: 0.9rem;
     color: var(--text-secondary);
     font-size: 0.9rem;
+    font-weight: 500;
   }
 
   .loading-container {
@@ -64,16 +101,19 @@
 
   .songs-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 24px;
-    margin-bottom: 32px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
 
-    @media (max-width: 768px) {
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 16px;
+    @media (max-width: 1220px) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
-    @media (max-width: 480px) {
+    @media (max-width: 900px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (max-width: 560px) {
       grid-template-columns: 1fr;
     }
   }
@@ -93,7 +133,7 @@
       grid-template-columns: 40px 50px 1.2fr 1fr 1fr 110px 80px 50px;
       align-items: center;
       gap: 10px;
-      padding: 8px 12px;
+      padding: 0.62rem 0.8rem;
       text-align: left;
       cursor: pointer;
       border-bottom: 1px solid var(--divider-color);
@@ -313,6 +353,19 @@
   }
 }
 
+@media (max-width: 1180px) {
+  .song-list-container {
+    .filters-section {
+      grid-template-columns: minmax(240px, 1fr) repeat(2, minmax(170px, 1fr));
+
+      mat-button-toggle-group {
+        grid-column: 1 / -1;
+        justify-self: start;
+      }
+    }
+  }
+}
+
 @media (max-width: 1100px) {
   .song-list-container {
     .songs-list .song-row {
@@ -321,6 +374,28 @@
       .hide-mobile {
         display: none;
       }
+    }
+  }
+}
+
+@media (max-width: 760px) {
+  .song-list-container {
+    .header {
+      margin-bottom: 1rem;
+
+      h1 {
+        font-size: 2rem;
+      }
+    }
+
+    .filters-section {
+      grid-template-columns: 1fr;
+    }
+
+    .songs-list .song-row {
+      grid-template-columns: 30px 42px 1.2fr 90px 44px;
+      gap: 0.45rem;
+      padding: 0.55rem 0.6rem;
     }
   }
 }

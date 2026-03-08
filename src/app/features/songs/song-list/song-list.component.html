@@ -51,6 +51,18 @@
     </mat-button-toggle-group>
   </div>
 
+  <div class="quick-genres" *ngIf="genres.length > 1">
+    <span class="quick-genres-label">Categories</span>
+    <mat-chip-set>
+      <mat-chip
+        *ngFor="let genre of genres"
+        [highlighted]="selectedGenre === genre"
+        (click)="selectedGenre = genre; onGenreChange()">
+        {{ genre === 'all' ? 'All' : genre }}
+      </mat-chip>
+    </mat-chip-set>
+  </div>
+
   <!-- Results Info -->
   <div class="results-info" *ngIf="!loading">
     <span>{{ filteredSongs.length }} song{{ filteredSongs.length !== 1 ? 's' : '' }} found</span>

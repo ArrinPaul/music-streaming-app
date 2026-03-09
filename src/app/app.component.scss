@@ -1,10 +1,53 @@
+.app-ambience {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(2px);
+  opacity: 0.42;
+  animation: drift 18s ease-in-out infinite alternate;
+
+  &--teal {
+    width: clamp(220px, 28vw, 420px);
+    height: clamp(220px, 28vw, 420px);
+    left: -80px;
+    top: 14%;
+    background: radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--primary-color) 58%, white), transparent 68%);
+  }
+
+  &--pink {
+    width: clamp(180px, 24vw, 360px);
+    height: clamp(180px, 24vw, 360px);
+    right: 0;
+    top: 8%;
+    background: radial-gradient(circle at 60% 40%, color-mix(in srgb, var(--accent-color) 54%, white), transparent 72%);
+    animation-duration: 20s;
+  }
+
+  &--mint {
+    width: clamp(170px, 22vw, 300px);
+    height: clamp(170px, 22vw, 300px);
+    right: 20%;
+    bottom: 5%;
+    background: radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--primary-color) 46%, var(--surface-color)), transparent 70%);
+    animation-duration: 15s;
+  }
+}
+
 .app-container {
   min-height: calc(100vh - 64px);
   max-width: var(--container-max);
   margin: 0 auto;
   width: 100%;
-  padding: 16px var(--padding-desktop) 112px;
-  background-color: var(--background-color);
+  padding: 18px var(--padding-desktop) 116px;
+  position: relative;
+  z-index: 1;
   
   @media (max-width: 600px) {
     padding: 10px var(--padding-mobile) 100px;
@@ -27,6 +70,12 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  transition: transform var(--transition-standard), box-shadow var(--transition-standard);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 24px 44px rgba(0, 0, 0, 0.28);
+  }
 
   &__left {
     display: flex;
@@ -45,6 +94,15 @@
       min-width: 0;
       display: flex;
       flex-direction: column;
+    }
+
+    .mini-player__now {
+      margin: 0 0 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.66rem;
+      color: var(--text-muted);
+      font-weight: 700;
     }
 
     strong,
@@ -68,6 +126,16 @@
 
   &__open {
     border-radius: var(--radius-full);
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    transform: translate3d(0, -12px, 0) scale(1.04);
   }
 }
 

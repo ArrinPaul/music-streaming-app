@@ -1,5 +1,13 @@
 <app-navbar></app-navbar>
 
+<div class="app-ambience" aria-hidden="true">
+  <span class="orb orb--teal"></span>
+  <span class="orb orb--pink"></span>
+  <span class="orb orb--mint"></span>
+</div>
+
+<div class="grain-overlay" aria-hidden="true"></div>
+
 <main class="app-container">
   <router-outlet></router-outlet>
 </main>
@@ -8,6 +16,7 @@
   <div class="mini-player__left">
     <img [src]="song.coverImageUrl" [alt]="song.title">
     <div>
+      <p class="mini-player__now">Now Playing</p>
       <strong>{{ song.title }}</strong>
       <span>{{ song.artistName }}</span>
     </div>

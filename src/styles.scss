@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=DM+Serif+Display:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Bricolage+Grotesque:opsz,wght@24..96,500;24..96,700;24..96,800&display=swap');
 
 :root {
   --brand-50: #f2fbfb;
@@ -28,8 +28,8 @@
   --slate-800: #1e293b;
   --slate-900: #0f172a;
 
-  --font-body: 'Manrope', 'Segoe UI', sans-serif;
-  --font-heading: 'DM Serif Display', Georgia, serif;
+  --font-body: 'Outfit', 'Segoe UI', sans-serif;
+  --font-heading: 'Bricolage Grotesque', 'Trebuchet MS', sans-serif;
   --letter-spacing-brand: 0.02em;
 
   --radius-xs: 6px;
@@ -56,10 +56,10 @@
 
 body,
 body.light-theme {
-  --background-color: #f8faf8;
-  --background-secondary: #f0f5f4;
+  --background-color: #f5f8f4;
+  --background-secondary: #ecf2ef;
   --surface-color: #ffffff;
-  --surface-variant: #f4f8f7;
+  --surface-variant: #f1f7f3;
   --primary-color: var(--brand-600);
   --primary-hover: var(--brand-700);
   --text-primary: #11252a;
@@ -71,8 +71,8 @@ body.light-theme {
   --hover-bg: #eef7f5;
   --accent-color: var(--accent-500);
   --accent-color-light: var(--accent-100);
-  --card-shadow: var(--shadow-sm);
-  --card-hover-shadow: var(--shadow-md);
+  --card-shadow: 0 8px 22px rgba(7, 38, 42, 0.08);
+  --card-hover-shadow: 0 16px 34px rgba(7, 38, 42, 0.14);
 
   --color-primary: var(--primary-color);
   --color-accent: var(--accent-color);
@@ -83,10 +83,10 @@ body.light-theme {
 }
 
 body.dark-theme {
-  --background-color: #0e1718;
-  --background-secondary: #132022;
-  --surface-color: #162729;
-  --surface-variant: #1b3134;
+  --background-color: #0b1416;
+  --background-secondary: #101d20;
+  --surface-color: #142427;
+  --surface-variant: #1b2f33;
   --primary-color: var(--brand-300);
   --primary-hover: var(--brand-200);
   --text-primary: #e9f6f4;
@@ -98,8 +98,8 @@ body.dark-theme {
   --hover-bg: rgba(196, 232, 228, 0.08);
   --accent-color: var(--accent-300);
   --accent-color-light: rgba(255, 155, 181, 0.15);
-  --card-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
-  --card-hover-shadow: 0 18px 34px rgba(0, 0, 0, 0.45);
+  --card-shadow: 0 12px 26px rgba(0, 0, 0, 0.36);
+  --card-hover-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
 
   --color-primary: var(--primary-color);
   --color-accent: var(--accent-color);
@@ -126,8 +126,9 @@ body {
   line-height: var(--line-height);
   color: var(--text-primary);
   background:
-    radial-gradient(720px 320px at 5% -2%, color-mix(in srgb, var(--primary-color) 18%, transparent), transparent 62%),
-    radial-gradient(740px 320px at 95% 0%, color-mix(in srgb, var(--accent-color) 16%, transparent), transparent 60%),
+    radial-gradient(720px 320px at 5% -2%, color-mix(in srgb, var(--primary-color) 22%, transparent), transparent 62%),
+    radial-gradient(740px 320px at 95% 0%, color-mix(in srgb, var(--accent-color) 18%, transparent), transparent 60%),
+    linear-gradient(180deg, color-mix(in srgb, var(--background-secondary) 40%, transparent), transparent 16%),
     var(--background-color);
   transition: background-color var(--transition-medium), color var(--transition-medium);
   -webkit-font-smoothing: antialiased;
@@ -211,6 +212,7 @@ a {
   border: 1px solid var(--border-color);
   box-shadow: var(--card-shadow) !important;
   transition: all var(--transition-standard) !important;
+  overflow: hidden;
 }
 
 .mat-mdc-button,
@@ -229,6 +231,16 @@ a {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   background: color-mix(in srgb, var(--surface-color) 94%, transparent);
+}
+
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.12;
+  z-index: 0;
+  background-image: radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--text-primary) 40%, transparent) 1px, transparent 0);
+  background-size: 3px 3px;
 }
 
 @media (max-width: 768px) {

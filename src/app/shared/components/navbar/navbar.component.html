@@ -14,7 +14,7 @@
           (ngModelChange)="onSearchChange()"
           (focus)="onSearchFocus()"
           (keyup.enter)="goToSearchPage()"
-          placeholder="Search songs, artists, albums">
+          placeholder="Search tracks, artists, and albums">
         <button
           *ngIf="searchQuery"
           matSuffix
@@ -39,9 +39,9 @@
 
     <nav class="navbar-menu">
       <a mat-button routerLink="/home" routerLinkActive="active"><mat-icon>home</mat-icon><span>Home</span></a>
-      <a mat-button routerLink="/songs" routerLinkActive="active"><mat-icon>library_music</mat-icon><span>Browse</span></a>
+      <a mat-button routerLink="/songs" routerLinkActive="active"><mat-icon>library_music</mat-icon><span>Tracks</span></a>
       <a mat-button routerLink="/artists" routerLinkActive="active"><mat-icon>podcasts</mat-icon><span>Artists</span></a>
-      <a mat-button routerLink="/playlists" routerLinkActive="active"><mat-icon>queue_music</mat-icon><span>Library</span></a>
+      <a mat-button routerLink="/playlists" routerLinkActive="active"><mat-icon>queue_music</mat-icon><span>Playlists</span></a>
       <a mat-button routerLink="/now-playing" routerLinkActive="active"><mat-icon>play_circle</mat-icon><span>Player</span></a>
     </nav>
 
